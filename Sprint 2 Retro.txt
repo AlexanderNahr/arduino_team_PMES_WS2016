@@ -1,1 +1,19 @@
+SPRINTRETROSPEKTIVE SPRINT 2:
+Izabella:
+positives Feedback, kein Wunsch was zu verändern
 
+Alexander:
+positives Feedback, Anmerkungen
+1) weiteres Kommunikationsmedium wünschenswert, um z. B. Tutorials zu teilen, etc. WhatsApp nicht geeignet.
+
+(Florian):
+Doppelte Nutzung von Dropbox und googledrive verwirrend
+
+Mario:
+positiv, Dropbox und googledrive doppelt sollte so nicht weiter gemacht werden. 
+
+
+Beschlusse:
+1) Alle Arbeitsdokumnte werden bei GitHub abgelegt.
+2) Googledrive wird als informales Speichermedium beibehalten (Videos, schneller Austausch von Dateien,...)
+3) Droxbox wird gelöscht
