@@ -70,7 +70,13 @@ void loop_back_mode()
 {
   char char_to_send_back = 'A';
   char string_to_send[ 100 ] = "MyAnswer";
+  int iRead[ 10 ];
 
+  for (int i=0; i<10; i++)
+  {
+      iRead[i] = Serial.read();
+  }
+  
   // read from SW Serial (Wifly Board) and write to HW Serial (Arduino Serial Monitor)
   if (mySerial.available()) 
   {
@@ -78,11 +84,19 @@ void loop_back_mode()
   }
   
   // read from HW serial (Arduino Serial Monitor) and write to SW serial (Wifly Board)
-  if (Serial.available()) //--> PROBLEM HERE, need to flush queue here
+  if (iRead[0] != -1) //--> PROBLEM HERE, need to flush queue here
   {
     // debug code for Serial Monitor
     Serial.print( "Following String will be send to Wifly Modul" );
-    Serial.print( string_to_send );
+    Serial.println( string_to_send );
+    
+        for (int i=0; i<10 ; i++)
+          {
+              Serial.print("Arrayplatz ");
+              Serial.print(i);
+              Serial.print(": ");
+              Serial.println(iRead[i]);
+          }
     
     mySerial.write( string_to_send );  // send this to Wifly modul, should appear in Telnet Com Window
   }
