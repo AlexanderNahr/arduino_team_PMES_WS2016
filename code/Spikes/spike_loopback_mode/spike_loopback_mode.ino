@@ -1,13 +1,19 @@
-/*
-  Code based on SoftwareSerialExample (see Arduino->Datei->Beispiele->SoftwareSerial)
+/*/****************************************************************************************************************//**
+   \file    spike_loopack_mode.c
+   \brief   Spike solution for loopback mode between Wifly Module and Arduino
+   \details uses telnet on host pc, connecting to IP 1.2.3.4 port 2000 and Arduino Serial Monitor to display messages
+            Code based on SoftwareSerialExample (see Arduino->Datei->Beispiele->SoftwareSerial)
 
-  The circuit:
-   RX is digital pin 10 (connect to TX of other device)
-   TX is digital pin 11 (connect to RX of other device)
+            The circuit:
+             RX is digital pin 10 (connect to TX of other device)
+             TX is digital pin 11 (connect to RX of other device)        
+   \author  Alexander Nahrwold
+   \date    20.1.2017
+*******************************************************************************************************************/
 
-*/
 
 
+/******************************************************************************************************************/
 // Include SoftwareSerial library
 #include <SoftwareSerial.h>
 
@@ -23,13 +29,14 @@ void bidirectional_mode();
 #define BIDIRECTIONAL 1
 #define LAZY_LOOPBACK 2
 
+#define WIFI_TERMINATION_START '['
+#define WIFI_TERMINATION_END   ']'
+
+
 /******************************************************************************************************************/
 // globals
 SoftwareSerial mySerial(10, 11); // // Create SoftwareSerial object (RX, TX)
 byte g_mode_of_operation = BIDIRECTIONAL;
-
-/******************************************************************************************************************/
-// function declaration (description of functions in defintion)
 
 
 void setup()
@@ -45,7 +52,7 @@ void setup()
   // Set data rate for the SW SoftwareSerial port
   mySerial.begin(9600);
 
-  g_mode_of_operation = LAZY_LOOPBACK; //LOOPBACK; // BIDIRECTIONAL; // set mode of operation
+  g_mode_of_operation = LOOPBACK; //LAZY_LOOPBACK; // BIDIRECTIONAL; // set mode of operation
 }
 
 void loop() 
@@ -90,59 +97,50 @@ void lazy_loop_back_mode()
   }
   
 }
+
 /****************************************************************************************************************//*
-   \brief receive message (as a string) from Wifly module and send it right back
+   \brief receive message (as a string) from Wifly module and send it right back, needs termination values
+   \details keep in mind it's a spike, need a function READ SERIAL BUFFER (interrupt driven)
    \author Alexander
    \date Jan 18, 2017
-
-   Well, this one isn't working as I planned it to. Seems to be in an eternal loop.
 /******************************************************************************************************************/
 void loop_back_mode()
 {
-  char char_to_send_back = 'A';
-  char string_to_send[100] = "";
-  char char_received = -1;
+  char string_to_send[100]  = "";    
+  char received_char        = -1;
+  bool full_msg_received    = false;
+  int i                     = 0;
   
 
-  // read from SW Serial (Wifly Board) and write to HW Serial (Arduino Serial Monitor)
-  if( mySerial.available() > 0 ) 
+  while( mySerial.available() > 0 && full_msg_received != true)           // check for first character
   {
-    int i = 0;
-    // read from Sw serial (Wifly) and print to HW Serial (Arduino serial monitor)
-    char_received = mySerial.read();
-
-    // loop through received string until no character in queue or '\0' reached
-    while( char_received != -1 && char_received != '\0' )
+    received_char = mySerial.read();
+    if( received_char == WIFI_TERMINATION_START )
     {
-      
-      Serial.println( char_received );            // print to Arduino Serial Monitor
-  
-      char_received = mySerial.read();            // read 1 char from Wifly queue
-      string_to_send[i] = char_received;          // add to string
-      if( char_received = '\0' )                  // end of received string reached
+      delay( 1 );                                                         // IMPORTANT: delay here, needs to be adjusted by baudrate 
+                                                                          // 9600 baud -> 9600 bytes/second -> 10 byte/ms=10kHz, 
+                                                                          // operationg speed of ATmega 328 = 16kHz)
+      string_to_send[ i++ ] = received_char;                              // store START char
+      while( mySerial.available() > 0 && full_msg_received != true )      // loop through remaining message
       {
-        mySerial.println( string_to_send );       // send whole string back to sender (Wifly module)
+        received_char = mySerial.read();
+        string_to_send[ i ] = received_char;
+        if( received_char == WIFI_TERMINATION_END )                       // check for END char
+        {
+          mySerial.println( string_to_send );                             // send message back to sender
+          full_msg_received = true;
+          
+          Serial.print( "Full Message received. Length: " );              // some debugging stuff
+          Serial.print( i + 1 );
+          Serial.print( " Message was: " );
+          Serial.println( string_to_send );
+          
+        }
+        delay( 1 );
+        i++;
       }
-      
-      i++;                                        // increment counter for string
     }
   }
-
-  // read from HW serial (Arduino Serial Monitor) and write to SW serial (Wifly Board)
-  /*if (Serial.available() > 0) //--> PROBLEM HERE, need to flush queue here
-  {
-    // debug code for Serial Monitor
-    Serial.print( "Following String will be send to Wifly Modul" );
-    //Serial.print( );//string_to_send );
-    Serial.println();
-    int read = Serial.read();
-    mySerial.print( string_to_send );
-    //mySerial.print( "print" );
-    //mySerial.println(string_to_send); // is NOT send
-    mySerial.println();// "println");     // is send twice
-    //mySerial.write( "write\n\r" );  // send this to Wifly modul, should appear in Telnet Com Window
-  }*/
-  //delay(100); // delay hat nichts gebracht..
 }
 
 /****************************************************************************************************************//*
