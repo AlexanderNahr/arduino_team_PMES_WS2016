@@ -52,7 +52,7 @@ void setup()
   // Set data rate for the SW SoftwareSerial port
   mySerial.begin(9600);
 
-  g_mode_of_operation = LOOPBACK; //LAZY_LOOPBACK; // BIDIRECTIONAL; // set mode of operation
+  g_mode_of_operation = BIDIRECTIONAL;//LOOPBACK; //LAZY_LOOPBACK; // ; // set mode of operation
 }
 
 void loop() 
