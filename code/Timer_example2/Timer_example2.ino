@@ -1,5 +1,7 @@
 #include "SimpleTimer.h"
- 
+
+                                        //TEST COMMENT 
+                                        //TEST COMMENT 2
 int counter; 
 boolean forthefirsttime = true;
 boolean locked = false;
