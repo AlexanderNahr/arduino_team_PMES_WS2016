@@ -8,11 +8,11 @@ boolean locked = false;
 void setup()
 {
   counter = 1;                  //counting failed connections
- Serial.begin(9600);
- //TIMER BLOCK 0 (init)
- Timer1.initialize(8000000);  
- Timer1.attachInterrupt(doSomething);  
- //END OF TIMER BLOCK 0
+  Serial.begin(9600);
+  //TIMER BLOCK 0 (init)
+  Timer1.initialize(8000000);  
+  Timer1.attachInterrupt(doSomething);  
+  //END OF TIMER BLOCK 0
 }
 
  
