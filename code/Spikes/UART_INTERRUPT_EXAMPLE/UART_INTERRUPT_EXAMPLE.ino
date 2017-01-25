@@ -3,11 +3,13 @@
  * @author F.Bartsch
  */
 
-// Include SoftwareSerial library
 #include <SoftwareSerial.h>
 
 // Create SoftwareSerial object
 SoftwareSerial mySerial(10, 11); // RX, TX
+
+// set up glabal data 
+static String rxString = "";
 
 /**
  * @brief Interface to get rxString in other Modules
@@ -20,9 +22,7 @@ String GetRxString(void){
 // this flag indicates a received sting is ready to work with.
 // note that that is the only global data structure in this module
 boolean rxStringCompleteFlag = false;
-
-// set up glabal data 
-static String rxString = "";
+boolean rxStringOverflowFlag = false;
 
 void setup()
 {
@@ -32,7 +32,7 @@ void setup()
   while (!Serial) {
     ; // wait for serial port to connect.
   }
-
+  
   // Set data rate for the sw serial port
   mySerial.begin(9600);
 
@@ -54,6 +54,11 @@ void loop() {
     rxString = "";
     rxStringCompleteFlag = false;
   }
+  
+  if (rxStringOverflowFlag)
+  {
+    mySerial.write("STRING TOO LONG!");
+  }
 }
 
 /**
@@ -68,6 +73,12 @@ void serialEvent() {
     
     // add it to the inputString:
     rxString += inChar;
+
+    if (rxString.length() >= 200)
+    {
+      rxString = ""
+      rxStringOverflowFlag = true;
+    }
     
     // set flag if incoming char is the termination sign "]".
     // this signals to the main loop to do somthing with the data
