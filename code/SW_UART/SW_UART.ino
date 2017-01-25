@@ -13,7 +13,6 @@
 
 // Create SoftwareSerial object
 SoftwareSerial mySerial(10, 11); // RX, TX
-char loopback_char = 'A';
 
 void setup()
 {
@@ -31,7 +30,6 @@ void setup()
 
 void loop() 
 {
-  
   // read from SW Serial and write to HW Serial
   if (mySerial.available()) 
   {
