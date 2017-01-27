@@ -8,10 +8,10 @@
 
 /******************************************************************************************************************/
 // include files
+#include "driver_timer.h"               //!< our timer definitions for timer measurement
+#include "driver_wifi.h"                //!< set up hardware Wifly modul
+#include "driver_wifi_protocol.h"       //!< our Wifi protocol + function definitions
 
-#include "include/driver_timer.h"               //!< our timer definitions for timer measurement
-#include "include/driver_wifi.h"                //!< set up hardware Wifly modul
-#include "include/driver_wifi_protocol.h"       //!< our Wifi protocol + function definitions
 
 
 void setup() {
