@@ -7,13 +7,15 @@
 *******************************************************************************************************************/
 
 #ifndef DRIVER_WIFI_H
-#ifndef DRIVER_WIFI_H
+#define DRIVER_WIFI_H
 
+#include "Arduino.h"
+/*
 typedef struct WifiClientDevice
 {
 	int IPAddress;				// TODO: fix data type
-	int ClientMacAddress		// TODO: fix data type
-	int RemainingLeaseTime;		// TODO: fix data type
+	int ClientMacAddress			// TODO: fix data type
+	int RemainingLeaseTime;			// TODO: fix data type
 	char* HostName;				// TODO: fix data type
 
 } WifiClientDevice;
@@ -29,5 +31,5 @@ void checkCurrentDevice( WifiClientDevice device_instance );		//!< return the cu
 void checkLastDevices( WifiClientDevice device_instance[] );		//!< returns list of the last connected devices
 void rebootWiflyModule();											//!< reboots module in case of error
 
-
+*/
 #endif  // DRIVER_WIFI_H
