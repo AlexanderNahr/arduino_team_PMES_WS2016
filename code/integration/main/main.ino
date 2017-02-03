@@ -1,5 +1,5 @@
 /****************************************************************************************************************//**
-   \file    main.ini
+   \file    main.ino
    \brief   main file for arduino team, this is where the main loop will be executed
    \author  Alexander Nahrwold
    \date    26.1.2017
