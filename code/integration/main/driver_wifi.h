@@ -9,7 +9,18 @@
 #ifndef DRIVER_WIFI_H
 #define DRIVER_WIFI_H
 
+
+/******************************************************************************************************************/
+// include files
 #include "Arduino.h"
+
+/******************************************************************************************************************/
+// globals
+
+
+/******************************************************************************************************************/
+// function declaration
+
 /*
 typedef struct WifiClientDevice
 {
@@ -32,4 +43,5 @@ void checkLastDevices( WifiClientDevice device_instance[] );    //!< returns lis
 void rebootWiflyModule();                     //!< reboots module in case of error
 
 */
+void setupWifiModule();     //!< sets up the wifi module as TCP server
 #endif  // DRIVER_WIFI_H

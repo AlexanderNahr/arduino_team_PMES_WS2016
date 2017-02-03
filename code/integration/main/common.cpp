@@ -1,26 +1,18 @@
 /****************************************************************************************************************//**
-   \file    DRIVER_TIMER_H.h
-   \brief   Contains definition/declarations for the timer
+   \file    common.cpp
+   \brief   contains common declarations throughout this project
    \author  Alexander Nahrwold
-   \date    20.1.2017
+   \date    2.2.2017
    \todo    
 *******************************************************************************************************************/
 
-#ifndef DRIVER_TIMER_H
-#define DRIVER_TIMER_H
-
-
 /******************************************************************************************************************/
 // include files
-#include "Arduino.h"
+#include "common.h"               //!< our timer definitions for timer measurement
 
 /******************************************************************************************************************/
 // globals
 
 
 /******************************************************************************************************************/
-// function declaration
-
-#endif  // DRIVER_TIMER_H
-
-
+// function declarations

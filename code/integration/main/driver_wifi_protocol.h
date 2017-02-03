@@ -7,7 +7,17 @@
 
 #ifndef DRIVER_WIFI_PROTOCOL_H
 #define DRIVER_WIFI_PROTOCOL_H
+
+/******************************************************************************************************************/
+// include files
 #include "Arduino.h"
+
+/******************************************************************************************************************/
+// globals
+
+
+/******************************************************************************************************************/
+// function declaration
 
 // #inlude <String.h>
 //#define WIFI_TERMINATION_START '['      //!< first char of valid wifi message -> maybe this should go into the UART driver
