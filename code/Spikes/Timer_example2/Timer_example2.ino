@@ -9,6 +9,11 @@ int numberoforders;                                 //# of incoming orders
 int mysimpletimerid;                                //timer ID                              
 int myordertimerid;                                 //timer ID
 int neworderstimerid;                               //timer ID
+int RemainingTime_Sek;                              //remaining seconds until factory terminates all registered orders
+int MyRandomNumber;                                 //a number between 0 and 10 generated with the internal random generator
+long StartTime_MillSek;                             //time point: starting the process of the first registered order (the very first one and the first one after pausing)
+int OrderProcessTime_Sek;                           //total time the factory needs to terminate all orders (will be increased at each new incoming order)
+                                                    //does not have to be decremented if the factory is ready with one order!!!                           
 
 void setup()
 {
@@ -22,6 +27,7 @@ void setup()
  //END OF TIMER BLOCK 0
  
  numberoforders = 2;                                                    //suppose that there are already some orders registered (starting state)
+ OrderProcessTime_Sek = 30;                                             //define the time the factory needs to process them
 }
 
  
@@ -48,6 +54,21 @@ void loop()
     Serial.println(").");
     counter=counter+1;                                              //count up (as if it would be registered a failed connection every second)
 
+   MyRandomNumber = random(10);                                     //generate random number
+   if (MyRandomNumber == 2)                                         // if a 2 is picked: tell the user how much time the factory needs to terminate the orders (remaining time) - in seconds  
+   {
+      if (numberoforders>0)
+      {
+        RemainingTime_Sek = OrderProcessTime_Sek-(round((millis()-StartTime_MillSek)/1000));      //compute remaining time
+        Serial.print("INFO TO THE APP: Factory needs ");
+        Serial.print(RemainingTime_Sek);
+        Serial.println(" seconds to terminate orders");
+      }
+      else 
+      {
+        Serial.println("Factory is on idle (no orders registered)");                            //factory is on idle right now
+      }
+   }
     
     if ((counter>10)&&(DoDisable_mysimpletimer==true))              //if threshold is reached for the first time                         
     {
@@ -106,6 +127,7 @@ void FactoryTerminatedOrder()                                   //factory execut
  void NewOrderReceived()                              //interrupt routine : new orders will be "generated" (as if the uC would receive a/some new order(s) )  
  {
   numberoforders = 2;                                 //new orders "received"
+  OrderProcessTime_Sek = 30;                          //define the total time the factory needs to terminate these orders (note: simply increment with three minutes if new order received)
   Serial.print(numberoforders);
   Serial.print (" new orders received (time: ");
   Serial.print(millis());
@@ -113,7 +135,8 @@ void FactoryTerminatedOrder()                                   //factory execut
   
   timer.enable(myordertimerid);                               //enable the myordertimer 
   timer.restartTimer(myordertimerid);                         //restart it  (reference time is NOW)
-   
+  StartTime_MillSek = millis();                               //save new start time of processing
+
   DoDisable_neworderstimer = true;                            //let the program disable the timer in the next running cycle (otherwise it would trigger again automatically in 5 seconds) 
  }
  //END OF TIMER BLOCK 3
