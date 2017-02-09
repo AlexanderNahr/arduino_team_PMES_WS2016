@@ -33,7 +33,7 @@ void loop()
   // read from SW Serial and write to HW Serial
   if (mySerial.available()) 
   {
-    Serial.write(Serial.read()); // sends to serial monitor
+    Serial.write(mySerial.read()); // sends to serial monitor
   }
 
   // read from HW serial and write to SW serial
