@@ -4,7 +4,7 @@
 
 //Debugging 
 //Implemented some debugging code in several critical points of the code. If debug_WiFiService is set to true then all debugging lines in the code are active, else inactive.
-static bool debug_WiFiService =  false; //
+static bool debug_WiFiService =  true; //
 
 class WiFiService
 {
@@ -23,7 +23,7 @@ class WiFiService
   private: 
   //Private Variables that can NOT be accesd from the Main Loop.They can only be accessd by the class itself.
   bool StringComplete;
-  bool StringStarted;
+  bool SawStartString;
   char SerialChar;
   int StringLength;
   String rxString;
@@ -33,6 +33,7 @@ class WiFiService
   void BuildString();
   void Bidirectional_Mode();
   void HWtoSWSerial();
+  bool Scan_SW_Serial_Buffer_for_Start_String (bool ShowtoSerial, char StartChar);
 };
 
 #endif
