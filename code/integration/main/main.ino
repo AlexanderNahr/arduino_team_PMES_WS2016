@@ -1,38 +1,43 @@
 /****************************************************************************************************************//**
-   \file    main.ino
-   \brief   main file for arduino team, this is where the main loop will be executed
+   \file    Main.in0
+   \brief   main file for code execution
    \author  Alexander Nahrwold
-   \date    26.1.2017
+   \date    Feb 20, 2017
 *******************************************************************************************************************/
 
 
 /******************************************************************************************************************/
 // include files
-#include "driver_timer.h"               //!< our timer definitions for timer measurement
-#include "driver_wifi.h"                //!< set up hardware Wifly modul
-#include "driver_wifi_protocol.h"       //!< our Wifi protocol + function definitions
-#include "driver_serial_uart.h"         //!< reveice/send messages to serial
+//M. Hamidi: This is a 'Main'-Like Ino File. Just to understand how to integrate the class in the 'real' main ino file in our repository.
+//Important: DON'T include SoftwareSerial.h it is already included by WiFiService.h
 
-/******************************************************************************************************************/
-// globals
+#include <Arduino.h>
+#include "WiFiService.h"
 
+// Create WiFiService object
+WiFiService myWiFiService;
 
-/******************************************************************************************************************/
-// function declarations
-
-
-void setup() {
-  // put your setup code here, to run once:
-  setupSerial( 9600 );  // setup the serial with 9600 baud
-  setupWifiModule();
+void setup()
+{
+  Serial.begin(9600);     // Set data rate for the HW serial port
+  while (!Serial) {;}     // wait for HW serial port to connect.
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
 
-  if( receiveHwSerial == true )
+
+void loop() {
+
+  myWiFiService.Init(false);
+  
+  if (myWiFiService.String_Is_Complete())
   {
-    // process message
+    Serial.println("");
+    Serial.print("String detected: ");
+    Serial.println(myWiFiService.Get_String());
+    myWiFiService.ResetString();
+    
+    //DEBUGGING CODE
+    if (debug_WiFiService) {Serial.println("");Serial.println("MainLoop - if String_Is_Complete");delay(1000);}
   }
 
 }
