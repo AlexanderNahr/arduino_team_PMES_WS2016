@@ -13,6 +13,7 @@
 
 #include <Arduino.h>
 #include "WiFiService.h"
+#include "driver_timer.h"
 
 // Create WiFiService object
 WiFiService myWiFiService;
