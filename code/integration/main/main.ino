@@ -22,12 +22,6 @@ void setup()
 {
   Serial.begin(9600);     // Set data rate for the HW serial port
   while (!Serial) {;}     // wait for HW serial port to connect.
-
-  if( setupTimer() == true )
-  {
-    Serial.print( "TimerSetupFinished\r\n" ); 
-  }
-  else Serial.print( "TimerSetupFAILED\r\n" ); 
 }
 
 
@@ -35,8 +29,6 @@ void setup()
 void loop() {
 
   myWiFiService.Init(false);
-
-  timerRuntime();
   
   if (myWiFiService.String_Is_Complete())
   {
