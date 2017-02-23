@@ -1,135 +1,28 @@
 /****************************************************************************************************************//**
-   \file    driver_timer.cpp
+   \file    timer.cpp
    \brief   Contains definition/declarations for the timer
    \author  Alexander Nahrwold
    \date    2.2.2017
 ********************************************************************************************************************/
 
+/******************************************************************************************************************/
+// include files
 #include "driver_timer.h"
 
-                                        
-int counter;                                        //it counts the failed connections to the uC
-boolean DoDisable_mysimpletimer = true;             //boolean variable - if it is true, the Mysimpletimer will be disabled for the actual running cycle
-boolean DoDisable_neworderstimer = true;            //boolean variable - if it is true, the Neworderstimer will be disabled for the actual running cycle                  
-SimpleTimer timer;                                  
-int numberoforders;                                 //# of incoming orders
-int mysimpletimerid;                                //timer ID                              
-int myordertimerid;                                 //timer ID
-int neworderstimerid;                               //timer ID
-int RemainingTime_Sek;                              //remaining seconds until factory terminates all registered orders
-int MyRandomNumber;                                 //a number between 0 and 10 generated with the internal random generator
-long StartTime_MillSek;                             //time point: starting the process of the first registered order (the very first one and the first one after pausing)
-int OrderProcessTime_Sek;                           //total time the factory needs to terminate all orders (will be increased at each new incoming order)
-                                                    //does not have to be decremented if the factory is ready with one order!!!                           
-/*
-void setup()
-{
- counter = 1;                                       //counting failed connections
- Serial.begin(9600);
- 
- //TIMER BLOCK 0
- mysimpletimerid= timer.setInterval (8000,RetryTimeout);                //8 seconds timeout for ARDUINO_ACK_RETRY_TIMEOUT 
- myordertimerid = timer.setInterval (15000,FactoryTerminatedOrder);     //15 seconds for each order to be completed by the factory (in reality 3 minutes) 
- neworderstimerid = timer.setInterval (5000, NewOrderReceived);         //after the factory executed all orders, 5 seconds later new orders "are received"
- //END OF TIMER BLOCK 0
- 
- numberoforders = 2;                                                    //suppose that there are already some orders registered (starting state)
- OrderProcessTime_Sek = 30;                                             //define the time the factory needs to process them
-}
+/******************************************************************************************************************/
+// globals
+int g_counter_timer               = 0;
+boolean g_doDisableMySimpletimer  = true;
+boolean g_doDisableNewOrdersTimer = true;
 
- 
-void loop()
-{  
-  
-}
-*/
 
-void timerRuntime()
-{
-  //TIMER BLOCK 1 
-   timer.run();                                                       //start all timers
-   if (DoDisable_mysimpletimer == true)                               //stop the mysimpletimer immediately; no need for it right now; it will be started only if there are
-   {                                                                  //at least 10 failed connection trials (final number of allowed failed connections not decided yet)
-    timer.disable(mysimpletimerid);
-   }
-   if (DoDisable_neworderstimer ==true)                               //stop the neworderstimer immediately; no need for it right now; it will be started only if the
-   {                                                                  //factory is ready with all the orders
-    timer.disable(neworderstimerid);
-   }
-  //END OF TIMER BLOCK 1
-  
-   //YOUR PROGRAMM HERE:
-    delay(1000);                                                     //count up in a one-second-tick
-    Serial.print("Actual time is ");
-    Serial.print(millis());
-    Serial.print("[msec] (#failed connections= ");
-    Serial.print(counter);
-    Serial.println(").");
-    counter=counter+1;                                              //count up (as if it would be registered a failed connection every second)
 
-   MyRandomNumber = random(10);                                     //generate random number
-   if (MyRandomNumber == 2)                                         // if a 2 is picked: tell the user how much time the factory needs to terminate the orders (remaining time) - in seconds  
-   {
-      if (numberoforders>0)
-      {
-        RemainingTime_Sek = OrderProcessTime_Sek-(round((millis()-StartTime_MillSek)/1000));      //compute remaining time
-        Serial.print("INFO TO THE APP: Factory needs ");
-        Serial.print(RemainingTime_Sek);
-        Serial.println(" seconds to terminate orders");
-      }
-      else 
-      {
-        Serial.println("Factory is on idle (no orders registered)");                            //factory is on idle right now
-      }
-   }
-    
-    if ((counter>10)&&(DoDisable_mysimpletimer==true))              //if threshold is reached for the first time                         
-    {
-      Serial.print("Too many failed connections. Channel will now be locked for 8 seconds (timestamp (msec): ");
-      Serial.print (millis());
-      Serial.println(")");                         
+int g_numberOfOrders              = 0;
+int g_mySimpleTimerId             = 0;
+int g_myOrderTimerId              = 0;
+int g_newOrdersTimerId            = 0;
 
-     //TIMER BLOCK 2
-      timer.enable(mysimpletimerid);                              //enable the formerly disabled timer    
-      timer.restartTimer(mysimpletimerid);                        //restart timer (reference time is NOW)    
-      DoDisable_mysimpletimer = false;                            //don't let the program disable the timer in the next running cycle (with the if statement at the code's beginning)
-     //END OF TIMER BLOCK 2
-     
-     }//end if
-     
-     if (numberoforders==0)                                       //if no more orders left in the factory queue
-     {
-      numberoforders = -1;                                        //avoid entering this loop in the next cycle
-
-      //TIMER BLOCK 2
-      timer.disable(myordertimerid);                              //stop the interval timer       
-      timer.enable(neworderstimerid);                             //enable the neworderstimer
-      timer.restartTimer(neworderstimerid);                       //restart the neworderstimer (reference time is NOW); this timer will "generate" in 5 seconds some new orders
-      DoDisable_neworderstimer = false;                           //don't let the program disable the timer in the next running cycle (with the if statement at the code's beginning)
-      //END OF TIMER BLOCK 2
-     }
-
-}
-/****************************************************************************************************************//**
-   \brief   setup timer
-   \author  Iza
-   \date    2.2.2017
-********************************************************************************************************************/
-bool setupTimer()
-{
-  bool ret_val = false;
-  counter = 1;                                       //counting failed connections
-  
-  //TIMER BLOCK 0
-  mysimpletimerid= timer.setInterval (8000,RetryTimeout);                //8 seconds timeout for ARDUINO_ACK_RETRY_TIMEOUT 
-  myordertimerid = timer.setInterval (15000,FactoryTerminatedOrder);     //15 seconds for each order to be completed by the factory (in reality 3 minutes) 
-  neworderstimerid = timer.setInterval (5000, NewOrderReceived);         //after the factory executed all orders, 5 seconds later new orders "are received"
-  //END OF TIMER BLOCK 0
- 
-  numberoforders = 2;                                                    //suppose that there are already some orders registered (starting state)
-  OrderProcessTime_Sek = 30;                                             //define the time the factory needs to process them
-  return( true );
-}
+SimpleTimer g_timer;
 
 /****************************************************************************************************************//**
    \brief   ISR for retry counter
@@ -137,26 +30,43 @@ bool setupTimer()
    \author  Iza
    \date    2.2.2017
 ********************************************************************************************************************/
-void RetryTimeout()
+bool setupTimer()
 {
-  Serial.print("Channel is open again (timestamp (msec): ");
-  Serial.print (millis());
-  Serial.println(")"); 
-  counter = 1;                                                   //failed connections counter is reset 
-  DoDisable_mysimpletimer  = true;                               //let the program disable the timer in the next running cycle (otherwise it would trigger again automatically in 8 seconds) 
-                
-}
+  g_counter_timer = 1;                                                        // counting failed connections
 
+  //TIMER BLOCK 0
+  g_mySimpleTimerId   = g_timer.setInterval (8000, retryTimeout);             // 8 seconds timeout for ARDUINO_ACK_RETRY_TIMEOUT
+  g_myOrderTimerId    = g_timer.setInterval (15000, factoryTerminatedOrder);  // 15 seconds for each order to be completed by the factory (in reality 3 minutes)
+  g_newOrdersTimerId  = g_timer.setInterval (5000, newOrderReceived);         // after the factory executed all orders, 5 seconds later new orders "are received"
+  //END OF TIMER BLOCK 0
+
+  g_numberOfOrders = 2;                                                       // suppose that there are already some orders registered (starting state)
+}
 /****************************************************************************************************************//**
-   \brief   ISR: triggers when factory executed an order
+   \brief   ISR for retry counter
    \details TIMER BLOCK 3 - interrupt routines
    \author  Iza
    \date    2.2.2017
 ********************************************************************************************************************/
-void FactoryTerminatedOrder()                                   //factory executed one order
+void retryTimeout()
 {
-  numberoforders = numberoforders -1;                           //decrement number of orders
-  if (numberoforders ==0)
+  Serial.print("Channel is open again (timestamp (msec): ");
+  Serial.print (millis());
+  Serial.println(")");
+  g_counter_timer = 1;                 // failed connections counter is reset
+  g_doDisableMySimpletimer  = true;    // let the program disable the timer in the next running cycle (otherwise it would trigger again automatically in 8 seconds)
+}
+
+/****************************************************************************************************************//**
+   \brief   ISR: retry counter
+   \details TIMER BLOCK 3 - interrupt routines
+   \author  Iza
+   \date    2.2.2017
+********************************************************************************************************************/
+void factoryTerminatedOrder()                                   //factory executed one order
+{
+  g_numberOfOrders = g_numberOfOrders - 1;                          //decrement number of orders
+  if (g_numberOfOrders == 0)
   {
     Serial.print("All orders terminated (time: ");
     Serial.print(millis());
@@ -164,8 +74,8 @@ void FactoryTerminatedOrder()                                   //factory execut
   }
   else
   {
-     Serial.print("Factory ready with one order. Remaining orders= ");
-     Serial.println(numberoforders);
+    Serial.print("Factory ready with one order. Remaining orders= ");
+    Serial.println(g_numberOfOrders);
   }
 }
 
@@ -175,21 +85,19 @@ void FactoryTerminatedOrder()                                   //factory execut
    \author  Iza
    \date    2.2.2017
 ********************************************************************************************************************/
-void NewOrderReceived()                              //interrupt routine : new orders will be "generated" (as if the uC would receive a/some new order(s) )  
+void newOrderReceived()
 {
-  numberoforders = 2;                                 //new orders "received"
-  OrderProcessTime_Sek = 30;                          //define the total time the factory needs to terminate these orders (note: simply increment with three minutes if new order received)
-  Serial.print(numberoforders);
+  g_numberOfOrders = 2;                             // new orders "received"
+  Serial.print(g_numberOfOrders);
   Serial.print (" new orders received (time: ");
   Serial.print(millis());
   Serial.println(")");
-  
-  timer.enable(myordertimerid);                               //enable the myordertimer 
-  timer.restartTimer(myordertimerid);                         //restart it  (reference time is NOW)
-  StartTime_MillSek = millis();                               //save new start time of processing
 
-  DoDisable_neworderstimer = true;                            //let the program disable the timer in the next running cycle (otherwise it would trigger again automatically in 5 seconds) 
+  g_timer.enable(g_myOrderTimerId);                 // enable the myordertimer
+  g_timer.restartTimer(g_myOrderTimerId);           // restart it  (reference time is NOW)
+
+  g_doDisableNewOrdersTimer = true;               // let the program disable the timer in the next running cycle
+  // (otherwise it would trigger again automatically in 5 seconds)
 }
- //END OF TIMER BLOCK 3
 
 //END OF TIMER BLOCK 3
