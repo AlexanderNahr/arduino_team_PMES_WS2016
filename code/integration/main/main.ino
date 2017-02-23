@@ -13,21 +13,14 @@
 
 #include <Arduino.h>
 #include "WiFiService.h"
-#include "driver_timer.h"
+
 // Create WiFiService object
 WiFiService myWiFiService;
 
 void setup()
 {
-  
   Serial.begin(9600);     // Set data rate for the HW serial port
   while (!Serial) {;}     // wait for HW serial port to connect.
-
-  if( setupTimer() == true )
-  {
-    Serial.print("TimerSetupSuccessful\r\n" );
-  }
-  else Serial.print("TimerSetupFailed\r\n" );
 }
 
 
@@ -35,7 +28,6 @@ void setup()
 void loop() {
 
   myWiFiService.Init(false);
-  timerRuntime();                     // example output timer
   
   if (myWiFiService.String_Is_Complete())
   {
