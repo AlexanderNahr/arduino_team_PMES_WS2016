@@ -18,16 +18,18 @@
 // definitions 
 
 // STATEMACHINE
-#define ERROR            -1  //!< wifi protocol identiefier not recognized
-#define LOGIN_SUCCESSFUL  0  //!< login to wifly module successful (pw corrct)
-#define LOGIN_PW_WRONG    1  //!< login to wifly module failed  (pw wront)
-#define LOGOUT_SUCCESSFUL 2  //!< logout from wifly module initiated (pw correct)
-#define LOGOUT_PW_WRONG   3  //!< logout from wifly modle failed (pw incorrect)
-#define ORDER_SUCCESSFUL  4  //!< order received, order string correct
-#define ORDER_WRONG       5  //!< order received, order string incorrect
-#define ORDER_PW_WRONG    6  //!< order received, pw incorrect
-#define BROADCAST         7  //!< broadcast enabled
-
+typedef enum states
+{
+	ERROR_STATE       = -1,   //!< wifi protocol identifier not recognized
+	LOGIN_SUCCESSFUL  =  0,  //!< login to wifly module successful (pw corrct)
+	LOGIN_PW_WRONG    =  1,  //!< login to wifly module failed  (pw wront)
+	LOGOUT_SUCCESSFUL =  2,  //!< logout from wifly module initiated (pw correct)
+	LOGOUT_PW_WRONG   =  3,  //!< logout from wifly modle failed (pw incorrect)
+	ORDER_SUCCESSFUL  =  4,  //!< order received, order string correct
+	ORDER_WRONG       =  5,  //!< order received, order string incorrect
+	ORDER_PW_WRONG    =  6,  //!< order received, pw incorrect
+	BROADCAST         =  7   //!< broadcast enabled
+} STATES;
 /******************************************************************************************************************/
 // globals
 
