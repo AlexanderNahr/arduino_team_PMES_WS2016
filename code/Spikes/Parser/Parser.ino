@@ -45,7 +45,7 @@ void loop() {
     Serial.print ("Parser returns the string = ");
     Serial.println(ParserReturnString);
     Serial.print ("Detected false strings until now= ");
-    Serial.println(g_counter_timer);   
+    Serial.println(counter);   
   
     //DEBUGGING CODE
     if (debug_WiFiService) {Serial.println("");Serial.println("MainLoop - if String_Is_Complete");delay(1000);}
