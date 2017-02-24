@@ -34,7 +34,7 @@ String Parser::Loginmanagement(String ReceivedString, int Orders, int Time)
   String ReceivedPassword = ReceivedString.substring(pos+1);
   if (ReceivedPassword==Password)
   {
-    StringToBeReturned = CommonAnswer + "SUCCESSFULL";
+    StringToBeReturned = CommonAnswer + "SUCCESSFUL";
     Returnvalue = 0;
   }
   else
@@ -84,12 +84,12 @@ String Parser::Ordermanagement(String ReceivedString, int Orders, int Time)
   String ThirdPart = SecondPart.substring(pos2+1);
   if (ReceivedPassword==Password)
   {
-    StringToBeReturned = CommonAnswer_Part1 + "SUCCESSFULL%" + CommonAnswer_Part2;
+    StringToBeReturned = CommonAnswer_Part1 + "SUCCESSFUL%" + CommonAnswer_Part2;
     Returnvalue = 4;
     bool StringOK = CheckString(ThirdPart);
     if (StringOK)
     {
-      StringToBeReturned = CommonAnswer_Part1 + "SUCCESSFULL%" + CommonAnswer_Part2;
+      StringToBeReturned = CommonAnswer_Part1 + "SUCCESSFUL%" + CommonAnswer_Part2;
       Returnvalue=4;
     }
     else
@@ -131,37 +131,30 @@ int Parser::RunParser(String ReceivedString,int Orders, int RemainingTime)
   String FirstWord = ReceivedString_NoDelim.substring(0,DelimiterPosition);
   if(FirstWord=="SIGN_IN")
     {
-      Serial.println("Anmeldung");
       Answer = Loginmanagement(ReceivedString_NoDelim,0,0);
+      Answer = "[" + Answer + "]\n";
     }
-    else 
-      {
-        if (FirstWord=="ORDER")
-        {
-          Answer = Ordermanagement(ReceivedString_NoDelim,0,0);
-          Answer = "[" + Answer + "]\n";
-        }
-        else
-          {
-            if (FirstWord=="SIGN_OUT")
-            {
-             Answer = Logoutmanagement(ReceivedString_NoDelim,0,0); 
-             Answer = "[" + Answer + "]\n";
-            }
-            else
-            if (FirstWord == "BROADCAST")
-            {
-              Answer = Broadcastmanagement();
-              Answer = "[" + Answer + "]\n";
-            }
+    else if (FirstWord=="ORDER")
+    {
+        Answer = Ordermanagement(ReceivedString_NoDelim,0,0);
+        Answer = "[" + Answer + "]\n";
+    }
+    else if (FirstWord=="SIGN_OUT")
+    {
+         Answer = Logoutmanagement(ReceivedString_NoDelim,0,0); 
+         Answer = "[" + Answer + "]\n";
+    }
+    else if (FirstWord == "BROADCAST")
+    {
+         Answer = Broadcastmanagement();
+         Answer = "[" + Answer + "]\n";
+    }
             else
             {
               Returnvalue = -1;
               Answer = "ERROR";
               Answer = "[" + Answer + "]\n";
             }
-          }
-      }
       return Returnvalue;
 }
 /**************************************************************************************/
