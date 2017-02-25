@@ -13,6 +13,7 @@
 #include <Arduino.h>
 #include "Parser.h"
 #include "driver_timer.h"   
+#include "common.h"
 
 //Constructor
 Parser::Parser()
@@ -35,12 +36,12 @@ String Parser::Loginmanagement(String ReceivedString, int Orders, int Time)
   if (ReceivedPassword==Password)
   {
     StringToBeReturned = CommonAnswer + "SUCCESSFUL";
-    Returnvalue = 0;
+    Returnvalue = LOGIN_SUCCESSFUL;
   }
   else
   {
     StringToBeReturned = CommonAnswer + "PW_WRONG";
-    Returnvalue = 1;
+    Returnvalue = LOGIN_PW_WRONG;
   }
   return StringToBeReturned;
 }
@@ -57,11 +58,11 @@ String Parser::Logoutmanagement(String ReceivedString, int Orders, int Time)
   String ReceivedPassword = ReceivedString.substring(pos+1);
   if (ReceivedPassword==Password)
   {
-    Returnvalue = 2;
+    Returnvalue = LOGOUT_SUCCESSFUL;
   }
   else
   {
-    Returnvalue = 3;
+    Returnvalue = LOGOUT_PW_WRONG;
   }
   return StringToBeReturned;
 }
@@ -85,24 +86,24 @@ String Parser::Ordermanagement(String ReceivedString, int Orders, int Time)
   if (ReceivedPassword==Password)
   {
     StringToBeReturned = CommonAnswer_Part1 + "SUCCESSFUL%" + CommonAnswer_Part2;
-    Returnvalue = 4;
+    //Returnvalue = 4;
     bool StringOK = CheckString(ThirdPart);
     if (StringOK)
     {
       StringToBeReturned = CommonAnswer_Part1 + "SUCCESSFUL%" + CommonAnswer_Part2;
-      Returnvalue=4;
+      Returnvalue=ORDER_SUCCESSFUL;
     }
     else
     {
       StringToBeReturned = CommonAnswer_Part1 + "ORDER_WRONG%" + CommonAnswer_Part2;
-      Returnvalue = 5;
-      g_counter_timer++;
+      Returnvalue = ORDER_WRONG;
+      counter++;
     }
   }
   else
   {
     StringToBeReturned = CommonAnswer_Part1 + "PW_WRONG%" + CommonAnswer_Part2;
-    Returnvalue = 6;
+    Returnvalue = ORDER_PW_WRONG;
   }
   return StringToBeReturned;
 }
@@ -115,7 +116,7 @@ String Parser::Ordermanagement(String ReceivedString, int Orders, int Time)
 String Parser::Broadcastmanagement()
 {
   String BroadcastAnswer = "BROADCAST_RS%SMART_MINIFAB";
-  Returnvalue = 7;
+  Returnvalue = BROADCAST;
   return BroadcastAnswer;
 }
 
@@ -124,7 +125,7 @@ String Parser::Broadcastmanagement()
 //->returns the integer value (Returnvalue), which controls the main state machine
 //->updates the string to be sent to the App
 
-int Parser::RunParser(String ReceivedString,int Orders, int RemainingTime)
+states Parser::RunParser(String ReceivedString,int Orders, int RemainingTime)
 {
   String ReceivedString_NoDelim = ReceivedString.substring(1,ReceivedString.length()-1); 
   int DelimiterPosition = ReceivedString_NoDelim.indexOf("%");
@@ -151,7 +152,7 @@ int Parser::RunParser(String ReceivedString,int Orders, int RemainingTime)
     }
             else
             {
-              Returnvalue = -1;
+              Returnvalue = ERROR_STATE;
               Answer = "ERROR";
               Answer = "[" + Answer + "]\n";
             }
