@@ -11,7 +11,7 @@
 #define DEBUG_PRINT(x)
 #endif
 
-#define DEBUG_MODE
+//#define DEBUG_MODE
 #ifdef DEBUG_MODE
 #define DEBUG_MODE(x)  Serial.print("DEBUG_MODE: "); Serial.println (x);
 #else
@@ -47,8 +47,8 @@ WiFiService::WiFiService()
   StartStopCharType = 0;
   StringCounter = 3;
   RxString[0].reserve(50);
-  RxString[0].reserve(50);
-  RxString[0].reserve(50);
+  RxString[1].reserve(50);
+  RxString[2].reserve(50);
 }
 
 
@@ -143,7 +143,7 @@ void WiFiService::Wait_for_Start_Character()
 // until End Character is detected
 void WiFiService::BuildString()
 {
-          while (mySerial.available() && !SawEndChar)
+          while (mySerial.available())
           {
 			  SerialChar = (char)mySerial.read();
 
