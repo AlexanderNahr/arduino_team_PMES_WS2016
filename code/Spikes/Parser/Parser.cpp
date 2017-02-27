@@ -14,8 +14,6 @@
 #include "Parser.h"
 #include "driver_timer.h"   
 #include "common.h"
-#include "string.h"
-
 //Constructor
 Parser::Parser()
 {
@@ -32,7 +30,7 @@ String Parser::Loginmanagement(String ReceivedString, int Orders, int Time)
 {
   String StringToBeReturned;
   String CommonAnswer = "SIGN_IN_RS%" + String(Orders) + "%" + String(Time) + "%";
-  int pos = ReceivedString.indexOf('%');
+  int pos = ReceivedString.indexOf("%");
   String ReceivedPassword = ReceivedString.substring(pos+1);
   if (ReceivedPassword==Password)
   {
@@ -55,7 +53,7 @@ String Parser::Loginmanagement(String ReceivedString, int Orders, int Time)
 String Parser::Logoutmanagement(String ReceivedString, int Orders, int Time)
 {
   String StringToBeReturned= "SIGN_OUT";
-  int pos = ReceivedString.indexOf('%');
+  int pos = ReceivedString.indexOf("%");
   String ReceivedPassword = ReceivedString.substring(pos+1);
   if (ReceivedPassword==Password)
   {
@@ -79,19 +77,15 @@ String Parser::Ordermanagement(String ReceivedString, int Orders, int Time)
   String StringToBeReturned;
   String CommonAnswer_Part1 = "ORDER_RS%";
   String CommonAnswer_Part2 =  String(Orders) + "%" + String(Time);
-  int pos1 = ReceivedString.indexOf('%');
+  int pos1 = ReceivedString.indexOf("%");
   String SecondPart = ReceivedString.substring(pos1+1);
-  int pos2 = SecondPart.indexOf('%');
+  int pos2 = SecondPart.indexOf("%");
   String ReceivedPassword = SecondPart.substring(0,pos2);
   String ThirdPart = SecondPart.substring(pos2+1);
-  Serial.print("THIRDPART = ");
-  Serial.println(ThirdPart);
   if (ReceivedPassword==Password)
   {
-    StringToBeReturned = CommonAnswer_Part1 + "SUCCESSFUL%" + CommonAnswer_Part2;
-    //Returnvalue = 4;
     bool StringOK = CheckString(ThirdPart);
-    if (StringOK==true)
+    if (StringOK)
     {
       StringToBeReturned = CommonAnswer_Part1 + "SUCCESSFUL%" + CommonAnswer_Part2;
       Returnvalue=ORDER_SUCCESSFUL;
@@ -130,60 +124,58 @@ String Parser::Broadcastmanagement()
 
 states Parser::RunParser(String ReceivedString,int Orders, int RemainingTime)
 {
-  String ReceivedString_NoDelim = ReceivedString.substring(1,ReceivedString.length()-1);
-  //decide if first character is a * or [
-  if (ReceivedString.charAt(0)=='*') //the message is a connection message
+  String ReceivedString_NoDelim = ReceivedString.substring(1,ReceivedString.length()-1); 
+  if (ReceivedString.charAt(0)=='*')
   {
     if (ReceivedString_NoDelim == "OPEN")
     {
-      Answer = "OPEN"; //actually no response string requested
-      Returnvalue = CLIENT_CONNECT;
+      Answer = "OPEN";
+      Returnvalue = CLIENT_CONNECT; 
     }
-    else if (ReceivedString_NoDelim=="CLOS")
+    else if (ReceivedString_NoDelim == "CLOS")
     {
-      Answer = "CLOS"; //actually no response string requested
+      Answer = "CLOS";
       Returnvalue = CLIENT_DISCONNECT;
     }
-    else //this case theoretically cannot even happen, but for all cases: 
+    else
     {
       Answer = "ERROR";
       Returnvalue = ERROR_STATE;
+      Serial.println("I was here");
     }
   }
-  else //the message is a command message (detected with the [ and ] delimiters
+  else 
   {
-    int DelimiterPosition = ReceivedString_NoDelim.indexOf('%');
-    String FirstWord = ReceivedString_NoDelim.substring(0,DelimiterPosition);
-    if(FirstWord=="SIGN_IN")
+    int DelimiterPosition = ReceivedString_NoDelim.indexOf("%");
+  String FirstWord = ReceivedString_NoDelim.substring(0,DelimiterPosition); 
+  if(FirstWord=="SIGN_IN")
     {
+      Serial.println("Anmeldung");
       Answer = Loginmanagement(ReceivedString_NoDelim,0,0);
-      Answer = "[" + Answer + "]\n";
     }
     else if (FirstWord=="ORDER")
-    {
-        Answer = Ordermanagement(ReceivedString_NoDelim,0,0);
-        Serial.println("Answer is=");
-        Serial.println(Answer);
-        Answer = "[" + Answer + "]\n";
-    }
-    else if (FirstWord=="SIGN_OUT")
-    {
-         Answer = Logoutmanagement(ReceivedString_NoDelim,0,0); 
-         Answer = "[" + Answer + "]\n";
-    }
-    else if (FirstWord == "BROADCAST")
-    {
-         Answer = Broadcastmanagement();
-         Answer = "[" + Answer + "]\n";
-    }
-            else
+        {
+          Answer = Ordermanagement(ReceivedString_NoDelim,0,0);
+          Answer = "[" + Answer + "]\n";
+        }
+        else if (FirstWord=="SIGN_OUT")
+            {
+             Answer = Logoutmanagement(ReceivedString_NoDelim,0,0); 
+             Answer = "[" + Answer + "]\n";
+            }
+       else if (FirstWord == "BROADCAST")
+            {
+              Answer = Broadcastmanagement();
+              Answer = "[" + Answer + "]\n";
+            }
+       else
             {
               Returnvalue = ERROR_STATE;
               Answer = "ERROR";
               Answer = "[" + Answer + "]\n";
-            }   
+            }
   }
- return Returnvalue; 
+  return Returnvalue;
 }
 /**************************************************************************************/
 //Function CheckString:
@@ -195,48 +187,29 @@ bool Parser::CheckString(String OrderString)
 {
   int pos;
   int result = 1;
-  String Geom;
-  String Version;
-  String Arrangement;
-  String HelpString;
-  String OrderString2;
+  String Geom, Version,Arrangement;
   bool Status;
-  Serial.print("checkstring received= ");
-  Serial.println(OrderString);
-  OrderString2=OrderString;
-  Serial.print("OrderString2 =" );
-  Serial.println(OrderString2);
   
   //check first string: Geometry
-  pos = OrderString2.indexOf(';');
-  Geom = OrderString2.substring(0,pos);
-  Serial.println("Geom: " + Geom);
+  pos = OrderString.indexOf(";");
+  Geom = OrderString.substring(0,pos);
   if ((Geom.length()<1)or(Geom.length()>2)){result =result *0; }
-  OrderString2 = OrderString2.substring(pos+1);
-  
-  Serial.print("new orderstring= ");
-  Serial.println(OrderString2);
+  OrderString = OrderString.substring(pos+1);
 
   //check second string: Version
-  pos = OrderString2.indexOf(';');
-  Version = OrderString2.substring(0,pos);
-  Serial.println(Version);
-  OrderString2 = OrderString2.substring(pos+1);
-  Serial.print("new orderstring = ");
-    Serial.println(OrderString2);
+  pos = OrderString.indexOf(";");
+  Version = OrderString.substring(0,pos);
+  OrderString = OrderString.substring(pos+1);
   if (Version.length()!=1) {result =result *0;}
 
   //check all six Arrangement strings
   for (int i=1; i<7; i++)
   {
-    if (pos==-1) {result=result*0;} //if end of string too early reached (string does not contain all required elements)
-    pos = OrderString2.indexOf(';');
-    Arrangement = OrderString2.substring(0,pos);
-    Serial.println("Arr= "+Arrangement);
+    if (pos==-1) {result=result*0;}
+    pos = OrderString.indexOf(";");
+    Arrangement = OrderString.substring(0,pos);
     if (Arrangement.length()!=5) {result = result * 0;}
-    OrderString2 = OrderString2.substring(pos+1); 
-    Serial.print("new orderstring = ");
-    Serial.println(OrderString2);
+    OrderString = OrderString.substring(pos+1);
   }
 
   //the string is longer than expected
