@@ -14,7 +14,6 @@
 #include "Parser.h"
 #include "driver_timer.h"   
 #include "common.h"
-
 //Constructor
 Parser::Parser()
 {
@@ -85,8 +84,6 @@ String Parser::Ordermanagement(String ReceivedString, int Orders, int Time)
   String ThirdPart = SecondPart.substring(pos2+1);
   if (ReceivedPassword==Password)
   {
-    StringToBeReturned = CommonAnswer_Part1 + "SUCCESSFUL%" + CommonAnswer_Part2;
-    //Returnvalue = 4;
     bool StringOK = CheckString(ThirdPart);
     if (StringOK)
     {
@@ -128,35 +125,57 @@ String Parser::Broadcastmanagement()
 states Parser::RunParser(String ReceivedString,int Orders, int RemainingTime)
 {
   String ReceivedString_NoDelim = ReceivedString.substring(1,ReceivedString.length()-1); 
-  int DelimiterPosition = ReceivedString_NoDelim.indexOf("%");
-  String FirstWord = ReceivedString_NoDelim.substring(0,DelimiterPosition);
+  if (ReceivedString.charAt(0)=='*')
+  {
+    if (ReceivedString_NoDelim == "OPEN")
+    {
+      Answer = "OPEN";
+      Returnvalue = CLIENT_CONNECT; 
+    }
+    else if (ReceivedString_NoDelim == "CLOS")
+    {
+      Answer = "CLOS";
+      Returnvalue = CLIENT_DISCONNECT;
+    }
+    else
+    {
+      Answer = "ERROR";
+      Returnvalue = ERROR_STATE;
+      Serial.println("I was here");
+    }
+  }
+  else 
+  {
+    int DelimiterPosition = ReceivedString_NoDelim.indexOf("%");
+  String FirstWord = ReceivedString_NoDelim.substring(0,DelimiterPosition); 
   if(FirstWord=="SIGN_IN")
     {
+      Serial.println("Anmeldung");
       Answer = Loginmanagement(ReceivedString_NoDelim,0,0);
-      Answer = "[" + Answer + "]\n";
     }
     else if (FirstWord=="ORDER")
-    {
-        Answer = Ordermanagement(ReceivedString_NoDelim,0,0);
-        Answer = "[" + Answer + "]\n";
-    }
-    else if (FirstWord=="SIGN_OUT")
-    {
-         Answer = Logoutmanagement(ReceivedString_NoDelim,0,0); 
-         Answer = "[" + Answer + "]\n";
-    }
-    else if (FirstWord == "BROADCAST")
-    {
-         Answer = Broadcastmanagement();
-         Answer = "[" + Answer + "]\n";
-    }
-            else
+        {
+          Answer = Ordermanagement(ReceivedString_NoDelim,0,0);
+          Answer = "[" + Answer + "]\n";
+        }
+        else if (FirstWord=="SIGN_OUT")
+            {
+             Answer = Logoutmanagement(ReceivedString_NoDelim,0,0); 
+             Answer = "[" + Answer + "]\n";
+            }
+       else if (FirstWord == "BROADCAST")
+            {
+              Answer = Broadcastmanagement();
+              Answer = "[" + Answer + "]\n";
+            }
+       else
             {
               Returnvalue = ERROR_STATE;
               Answer = "ERROR";
               Answer = "[" + Answer + "]\n";
             }
-      return Returnvalue;
+  }
+  return Returnvalue;
 }
 /**************************************************************************************/
 //Function CheckString:
@@ -186,6 +205,7 @@ bool Parser::CheckString(String OrderString)
   //check all six Arrangement strings
   for (int i=1; i<7; i++)
   {
+    if (pos==-1) {result=result*0;}
     pos = OrderString.indexOf(";");
     Arrangement = OrderString.substring(0,pos);
     if (Arrangement.length()!=5) {result = result * 0;}
