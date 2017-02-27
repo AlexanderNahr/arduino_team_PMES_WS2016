@@ -14,8 +14,13 @@
 #include <Arduino.h>
 #include "WiFiService.h"
 #include "driver_timer.h"
-// Create WiFiService object
-WiFiService myWiFiService;
+#include "common.h"
+
+/******************************************************************************************************************/
+// include files
+WiFiService myWiFiService;      //!< Create WiFiService object
+STATES g_states;                //!< states for state machine
+
 
 void setup()
 {
@@ -28,6 +33,7 @@ void setup()
     Serial.print("TimerSetupSuccessful\r\n" );
   }
   else Serial.print("TimerSetupFailed\r\n" );
+
 }
 
 
@@ -48,6 +54,33 @@ void loop() {
     if (debug_WiFiService) {Serial.println("");Serial.println("MainLoop - if String_Is_Complete");delay(1000);}
   }
 
+  switch( g_states )
+  {
+    case ERROR_STATE:
+    break;
+    case LOGIN_SUCCESSFUL:
+    break;
+    case LOGIN_PW_WRONG:
+    break;
+    case LOGOUT_SUCCESSFUL:
+    break;
+    case LOGOUT_PW_WRONG:
+    break;
+    case ORDER_SUCCESSFUL:
+    break;
+    case ORDER_WRONG:
+    break;
+    case ORDER_PW_WRONG:
+    break;
+    case BROADCAST:
+    break;
+    case CLIENT_CONNECT:
+    break;
+    case CLIENT_DISCONNECT:
+    break;
+    default:
+    break;
+  }
 }
 
 
