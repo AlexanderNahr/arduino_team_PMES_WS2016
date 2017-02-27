@@ -21,18 +21,19 @@ void setup()
 {
   Serial.begin(9600);     // Set data rate for the HW serial port
   while (!Serial) {;}     // wait for HW serial port to connect.
-  //myWiFiService.Init();
+  myWiFiService.Init();
 }
 void loop() {
-  myWiFiService.Init(true);
+  myWiFiService.Run(true);
   delay(1000);
   if (myWiFiService.String_Is_Complete())
   {
     Serial.println("");
     Serial.print("String detected: ");
-    String InputString=myWiFiService.Get_String();
+    //String InputString=myWiFiService.Get_String();
+    String InputString=myWiFiService.Read();
     Serial.println(InputString);
-    myWiFiService.ResetString();
+    //myWiFiService.ResetString();
       
     states ParserReturnState;
     ParserReturnState = myParser.RunParser(InputString,0,0);

@@ -46,6 +46,9 @@ WiFiService::WiFiService()
   CurrentString = "";
   StartStopCharType = 0;
   StringCounter = 3;
+  RxString[0].reserve(50);
+  RxString[0].reserve(50);
+  RxString[0].reserve(50);
 }
 
 
