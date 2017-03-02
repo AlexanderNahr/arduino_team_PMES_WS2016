@@ -14,6 +14,7 @@
 #include <Arduino.h>
 #include "common.h"
 
+
 /****************************************************************************************************************//**
  * \brief   Parser Class
  * \author  Izabella Sandor

@@ -140,7 +140,7 @@ void WiFiService::Wait_for_Start_Character()
 // until End Character is detected
 void WiFiService::BuildString()
 {
-          while (mySerial.available())
+          while (mySerial.available() && !SawEndChar)
           {
 			  SerialChar = (char)mySerial.read();
 
