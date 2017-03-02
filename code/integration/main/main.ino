@@ -43,12 +43,11 @@ void setup()
 /******************************************************************************************************************/
 void loop()
 {
+  timerRuntime();                                                       // example output timer
   myWiFiService.Run(true);                                              // continous wifi check
   delay( 1000 );
   if ( myWiFiService.String_Is_Complete() )                             // package received
   {
-    timerRuntime();                                                     // example output timer
-
     if (myWiFiService.String_Is_Complete())
     {
       Serial.println("");
