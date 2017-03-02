@@ -28,10 +28,11 @@ typedef enum states
 	ORDER_SUCCESSFUL  =  4,  //!< order received, order string correct
 	ORDER_WRONG       =  5,  //!< order received, order string incorrect
 	ORDER_PW_WRONG    =  6,  //!< order received, pw incorrect
-	BROADCAST         =  7,   //!< broadcast enabled
+	BROADCAST         =  7,  //!< broadcast enabled
 	CLIENT_CONNECT	  =  9,  //!< *OPEN* received from wify module (connect)
-	CLIENT_DISCONNECT = 10  //!< *CLOS* received from wify module (disconnect)	
+	CLIENT_DISCONNECT = 10   //!< *CLOS* received from wify module (disconnect)	
 } STATES;
+
 /******************************************************************************************************************/
 // globals
 
