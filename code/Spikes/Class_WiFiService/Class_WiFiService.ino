@@ -31,7 +31,8 @@ void loop()
     /*Serial.println(myWiFiService.GetString(1));
     Serial.println(myWiFiService.GetString(2));
 	Serial.println(myWiFiService.GetString(3));*/
-	Serial.println(myWiFiService.Read());
+  String str = myWiFiService.Read();
+  myWiFiService.Send(str);
 	Serial.println("SHOW ALL:");
 	myWiFiService.Debug_ShowAll();
   }

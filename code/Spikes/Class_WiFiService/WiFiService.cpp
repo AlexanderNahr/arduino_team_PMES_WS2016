@@ -46,6 +46,10 @@ WiFiService::WiFiService()
   CurrentString = "";
   StartStopCharType = 0;
   StringCounter = 3;
+  RxString[0].reserve(50);
+  RxString[1].reserve(50);
+  RxString[2].reserve(50);
+
 }
 
 
@@ -101,7 +105,11 @@ void WiFiService::Run(bool bo)
   HWtoSWSerial();
 }
 
+void WiFiService::Send(String str)
+{
 
+		mySerial.print(str);
+}
 
 //Modes
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

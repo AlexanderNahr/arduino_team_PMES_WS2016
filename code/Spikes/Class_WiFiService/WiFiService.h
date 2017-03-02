@@ -17,6 +17,7 @@ class WiFiService
   //Public Functions
   void Init();
   void Run(bool bo);
+  void Send(String str);
   bool String_Is_Complete();
   String GetString(int n);
   String Read();
@@ -40,7 +41,7 @@ class WiFiService
 
 	//Variables
 	char SerialChar;
-	String RxString[3] = { "ONE12345678902234567890333456789044445678905555567890", "TWO12345678902234567890333456789044445678905555567890", "THREE12345678902234567890333456789044445678905555567890" };
+	String RxString[3];
 	String CurrentString;
 	int StartStopCharType;
 	int StringCounter;
