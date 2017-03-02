@@ -2,7 +2,7 @@
    \file    Main.ino
    \brief   main file for code execution
    \author  Alexander Nahrwold
-   \date    Feb 20, 2017
+   \date    Mar 1, 2017
 *******************************************************************************************************************/
 
 
@@ -20,68 +20,70 @@ WiFiService myWiFiService;      //!< Create WiFiService object
 Parser myParser;                //!< Create Parser object
 STATES g_states;                //!< states for state machine
 
-
+/****************************************************************************************************************//*
+   \brief     initialization
+/******************************************************************************************************************/
 void setup()
 {
-  
-  Serial.begin(9600);     // Set data rate for the HW serial port
-  while (!Serial) {;}     // wait for HW serial port to connect.
+  Serial.begin(9600);           // set data rate for the HW serial port
+  while (!Serial){;}            // init HW serial port wait for HW serial port to connect.
 
-  if( setupTimer() == true )
+  if ( setupTimer() == true )   // init timer module
   {
     Serial.print("TimerSetupSuccessful\r\n" );
   }
   else Serial.print("TimerSetupFailed\r\n" );
-  myWiFiService.Init();
+
+  myWiFiService.Init();         // init Wifi class
 }
 
 
-
-void loop() 
+/****************************************************************************************************************//*
+   \brief     main loop
+/******************************************************************************************************************/
+void loop()
 {
-  myWiFiService.Run(true);
+  myWiFiService.Run(true);                                              // continous wifi check
   delay( 1000 );
-  if( myWiFiService.String_Is_Complete() )
+  if ( myWiFiService.String_Is_Complete() )                             // package received
   {
-    timerRuntime();                     // example output timer
-    
+    timerRuntime();                                                     // example output timer
+
     if (myWiFiService.String_Is_Complete())
     {
-        Serial.println("");
-        Serial.print("String detected: ");
-        String InputString=myWiFiService.Read();
-        
-        //DEBUGGING CODE
-        //if (debug_WiFiService) {Serial.println("");Serial.println("MainLoop - if String_Is_Complete");delay(1000);}
+      Serial.println("");
+      Serial.print("String detected: ");
       
-      g_states = myParser.RunParser(InputString,0,0);
-      String ParserReturnString = myParser.Get_String_from_Parser();
-      switch( g_states )
+      String received_string = myWiFiService.Read();                    // get string from Wifly
+      g_states = myParser.RunParser(received_string, 0, 0);             // interpret string
+      String parser_return_string = myParser.Get_String_from_Parser();  // get string for factory
+      
+      switch ( g_states )                                               // evaluate next steps
       {
         case ERROR_STATE:
-        break;
+          break;
         case LOGIN_SUCCESSFUL:
-        break;
+          break;
         case LOGIN_PW_WRONG:
-        break;
+          break;
         case LOGOUT_SUCCESSFUL:
-        break;
+          break;
         case LOGOUT_PW_WRONG:
-        break;
+          break;
         case ORDER_SUCCESSFUL:
-        break;
+          break;
         case ORDER_WRONG:
-        break;
+          break;
         case ORDER_PW_WRONG:
-        break;
+          break;
         case BROADCAST:
-        break;
+          break;
         case CLIENT_CONNECT:
-        break;
+          break;
         case CLIENT_DISCONNECT:
-        break;
+          break;
         default:
-        break;
+          break;
       }
     }
   }
