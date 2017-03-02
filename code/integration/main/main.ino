@@ -8,17 +8,16 @@
 
 /******************************************************************************************************************/
 // include files
-//M. Hamidi: This is a 'Main'-Like Ino File. Just to understand how to integrate the class in the 'real' main ino file in our repository.
-//Important: DON'T include SoftwareSerial.h it is already included by WiFiService.h
-
 #include <Arduino.h>
 #include "WiFiService.h"
 #include "driver_timer.h"
 #include "common.h"
+#include "Parser.h"
 
 /******************************************************************************************************************/
 // include files
 WiFiService myWiFiService;      //!< Create WiFiService object
+Parser myParser;                //!< Create Parser object
 STATES g_states;                //!< states for state machine
 
 
@@ -33,53 +32,58 @@ void setup()
     Serial.print("TimerSetupSuccessful\r\n" );
   }
   else Serial.print("TimerSetupFailed\r\n" );
-
+  myWiFiService.Init();
 }
 
 
 
-void loop() {
-
-  myWiFiService.Init(false);
-  timerRuntime();                     // example output timer
-  
-  if (myWiFiService.String_Is_Complete())
+void loop() 
+{
+  myWiFiService.Run(true);
+  delay( 1000 );
+  if( myWiFiService.String_Is_Complete() )
   {
-    Serial.println("");
-    Serial.print("String detected: ");
-    Serial.println(myWiFiService.Get_String());
-    myWiFiService.ResetString();
+    timerRuntime();                     // example output timer
     
-    //DEBUGGING CODE
-    if (debug_WiFiService) {Serial.println("");Serial.println("MainLoop - if String_Is_Complete");delay(1000);}
-  }
-
-  switch( g_states )
-  {
-    case ERROR_STATE:
-    break;
-    case LOGIN_SUCCESSFUL:
-    break;
-    case LOGIN_PW_WRONG:
-    break;
-    case LOGOUT_SUCCESSFUL:
-    break;
-    case LOGOUT_PW_WRONG:
-    break;
-    case ORDER_SUCCESSFUL:
-    break;
-    case ORDER_WRONG:
-    break;
-    case ORDER_PW_WRONG:
-    break;
-    case BROADCAST:
-    break;
-    case CLIENT_CONNECT:
-    break;
-    case CLIENT_DISCONNECT:
-    break;
-    default:
-    break;
+    if (myWiFiService.String_Is_Complete())
+    {
+        Serial.println("");
+        Serial.print("String detected: ");
+        String InputString=myWiFiService.Read();
+        
+        //DEBUGGING CODE
+        //if (debug_WiFiService) {Serial.println("");Serial.println("MainLoop - if String_Is_Complete");delay(1000);}
+      
+      g_states = myParser.RunParser(InputString,0,0);
+      String ParserReturnString = myParser.Get_String_from_Parser();
+      switch( g_states )
+      {
+        case ERROR_STATE:
+        break;
+        case LOGIN_SUCCESSFUL:
+        break;
+        case LOGIN_PW_WRONG:
+        break;
+        case LOGOUT_SUCCESSFUL:
+        break;
+        case LOGOUT_PW_WRONG:
+        break;
+        case ORDER_SUCCESSFUL:
+        break;
+        case ORDER_WRONG:
+        break;
+        case ORDER_PW_WRONG:
+        break;
+        case BROADCAST:
+        break;
+        case CLIENT_CONNECT:
+        break;
+        case CLIENT_DISCONNECT:
+        break;
+        default:
+        break;
+      }
+    }
   }
 }
 
