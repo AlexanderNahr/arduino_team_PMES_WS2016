@@ -57,8 +57,6 @@ void loop()
       g_states = myParser.RunParser(received_string, 0, 0);             // interpret string
       String parser_return_string = myParser.Get_String_from_Parser();  // get string for factory
  
-      myWiFiService.Send( parser_return_string );                       // send answer back to client
- 
       switch ( g_states )                                               // evaluate next steps
       {
         case ERROR_STATE:                           // return error
@@ -86,6 +84,8 @@ void loop()
         default:
           break;
       }
+      
+      myWiFiService.Send( parser_return_string );                       // send answer back to client      
     }
   }
 }
