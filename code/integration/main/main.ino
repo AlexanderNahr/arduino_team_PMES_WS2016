@@ -56,30 +56,32 @@ void loop()
       String received_string = myWiFiService.Read();                    // get string from Wifly
       g_states = myParser.RunParser(received_string, 0, 0);             // interpret string
       String parser_return_string = myParser.Get_String_from_Parser();  // get string for factory
-      
+ 
+      myWiFiService.Send( parser_return_string );                       // send answer back to client
+ 
       switch ( g_states )                                               // evaluate next steps
       {
-        case ERROR_STATE:
+        case ERROR_STATE:                           // return error
           break;
-        case LOGIN_SUCCESSFUL:
+        case LOGIN_SUCCESSFUL:                      // global client count
           break;
-        case LOGIN_PW_WRONG:
+        case LOGIN_PW_WRONG:      
           break;
-        case LOGOUT_SUCCESSFUL:
+        case LOGOUT_SUCCESSFUL:                     // decrease global client count
           break;
-        case LOGOUT_PW_WRONG:
+        case LOGOUT_PW_WRONG:                       // nothing for now
           break;
-        case ORDER_SUCCESSFUL:
+        case ORDER_SUCCESSFUL:                      // initiate order
           break;
-        case ORDER_WRONG:
+        case ORDER_WRONG:                           // return error
           break;
-        case ORDER_PW_WRONG:
+        case ORDER_PW_WRONG:                        // return error
           break;
-        case BROADCAST:
+        case BROADCAST:                             // dunno
           break;
-        case CLIENT_CONNECT:
+        case CLIENT_CONNECT:                        // set new client marker .. 
           break;
-        case CLIENT_DISCONNECT:
+        case CLIENT_DISCONNECT:                     // make factory availble for new client, reset client count
           break;
         default:
           break;
