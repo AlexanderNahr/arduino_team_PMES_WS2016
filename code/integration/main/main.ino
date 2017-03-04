@@ -22,6 +22,7 @@ Parser myParser;                          //!< Create Parser object
 Auftragsverwaltung myAuftragsverwaltung;  //!< Create Auftragsverwaltungs object
 STATES g_states;                          //!< states for state machine
 
+String AnswerOrder;
 byte g_error_count = 0;                   //!< counts erroneous messages received, resets when client disconnects
 #define MAX_ERROR_COUNT_SESSION 5         //!< max number of allowed erroneous message per sessions 
 
@@ -58,12 +59,13 @@ void loop()
     if (myWiFiService.String_Is_Complete())
     {
       Serial.println("");
-      Serial.print("String detected: ");
+      Serial.println("String detected!");
       
       String received_string = myWiFiService.Read();                    // get string from Wifly
-      g_states = myParser.RunParser(received_string, 0, 0);             // interpret string
+      g_states = myParser.RunParser(received_string, numberoforders, RemainingTime_Sek);             // interpret string
       parser_return_string = myParser.Get_String_from_Parser();  // get string for factory
-
+      Serial.print("Parser responds with: ");
+      Serial.println(parser_return_string);
       switch ( g_states )
       {
         case ERROR_STATE:                           // error states have same result
@@ -78,7 +80,9 @@ void loop()
         case LOGOUT_SUCCESSFUL:                     // do nothing?
           break;
         case ORDER_SUCCESSFUL:                      // initiate order
-          myAuftragsverwaltung.NewOrderRegistered( 1, 0); // TODO: where do we get the time from (set to 0 now) ?
+          
+          AnswerOrder= myAuftragsverwaltung.NewOrderRegistered(parser_return_string, numberoforders, RemainingTime_Sek); 
+          Serial.println("Auftragsverwaltung responds with: " + AnswerOrder);
           break;
         case BROADCAST:                             // dunno
           break;

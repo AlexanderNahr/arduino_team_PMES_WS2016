@@ -45,7 +45,7 @@ void Auftragsverwaltung::NewClientDetected()
 /**********************************************************************************************************************/
 //Function NewOrderRegistered:
 //
-String Auftragsverwaltung::NewOrderRegistered(int Orders, int Time)
+String Auftragsverwaltung::NewOrderRegistered(String StringFromParser,int Orders, int Time)
 {
         String myAnswerString="";
         
@@ -93,6 +93,10 @@ String Auftragsverwaltung::NewOrderRegistered(int Orders, int Time)
             OrderProcessTime_Sek = OrderProcessTime_Sek + TimeForOneOrder;   //increase the time the factory needs to process the orders 
             NewClient = false;                                          //label this client, as: known!              
           }
+        }
+        if (myAnswerString=="") 
+        {
+          myAnswerString = StringFromParser;
         }
         return myAnswerString;
 }

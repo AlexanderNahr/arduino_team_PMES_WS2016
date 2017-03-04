@@ -27,7 +27,7 @@ class Auftragsverwaltung
   //Public Functions and Variables that can be accessed from the Main Loop
   
   void NewClientDetected();
-  String NewOrderRegistered(int Orders, int Time);
+  String NewOrderRegistered(String StringFromParser,int Orders, int Time);
   
 
   private: 

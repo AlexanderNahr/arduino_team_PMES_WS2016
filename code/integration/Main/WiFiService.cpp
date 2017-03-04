@@ -11,7 +11,7 @@
 #define DEBUG_PRINT(x)
 #endif
 
-#define DEBUG_MODE
+//#define DEBUG_MODE
 #ifdef DEBUG_MODE
 #define DEBUG_MODE(x)  Serial.print("DEBUG_MODE: "); Serial.println (x);
 #else

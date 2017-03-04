@@ -151,16 +151,18 @@ states Parser::RunParser(String ReceivedString,int Orders, int RemainingTime)
   if(FirstWord=="SIGN_IN")
     {
       Serial.println("Anmeldung");
-      Answer = Loginmanagement(ReceivedString_NoDelim,0,0);
+      Answer = Loginmanagement(ReceivedString_NoDelim,numberoforders,RemainingTime_Sek);
     }
     else if (FirstWord=="ORDER")
         {
-          Answer = Ordermanagement(ReceivedString_NoDelim,0,0);
+          
+          Answer = Ordermanagement(ReceivedString_NoDelim,numberoforders,RemainingTime_Sek);
+          //Returnvalue=ORDER_SUCCESSFUL; (nur für Iza aktivieren!)
           Answer = "[" + Answer + "]\n";
         }
         else if (FirstWord=="SIGN_OUT")
             {
-             Answer = Logoutmanagement(ReceivedString_NoDelim,0,0); 
+             Answer = Logoutmanagement(ReceivedString_NoDelim,numberoforders,RemainingTime_Sek); 
              Answer = "[" + Answer + "]\n";
             }
        else if (FirstWord == "BROADCAST")
