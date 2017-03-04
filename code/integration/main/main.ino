@@ -22,9 +22,10 @@ Parser myParser;                          //!< Create Parser object
 Auftragsverwaltung myAuftragsverwaltung;  //!< Create Auftragsverwaltungs object
 STATES g_states;                          //!< states for state machine
 
-String AnswerOrder;
 byte g_error_count = 0;                   //!< counts erroneous messages received, resets when client disconnects
 #define MAX_ERROR_COUNT_SESSION 5         //!< max number of allowed erroneous message per sessions 
+
+String received_string;
 
 
 /****************************************************************************************************************//*
@@ -42,6 +43,7 @@ void setup()
   else Serial.print("TimerSetupFailed\r\n" );
 
   myWiFiService.Init();         // init Wifi class
+  received_string.reserve( 45 );
 }
 
 
@@ -53,7 +55,7 @@ void loop()
   timerRuntime();                                                       // example output timer
   myWiFiService.Run(true);                                              // continous wifi check
   delay( 1000 );
-  String parser_return_string = "";
+
   if ( myWiFiService.String_Is_Complete() )                             // package received
   {
     if (myWiFiService.String_Is_Complete())
@@ -61,11 +63,12 @@ void loop()
       Serial.println("");
       Serial.println("String detected!");
       
-      String received_string = myWiFiService.Read();                    // get string from Wifly
-      g_states = myParser.RunParser(received_string, numberoforders, RemainingTime_Sek);             // interpret string
-      parser_return_string = myParser.Get_String_from_Parser();  // get string for factory
-      Serial.print("Parser responds with: ");
-      Serial.println(parser_return_string);
+      received_string = myWiFiService.Read();                    // get string from Wifly
+      
+      myParser.ReceivedString = received_string;
+      g_states = myParser.RunParser("", numberoforders, RemainingTime_Sek);             // interpret string
+      received_string = myParser.Get_String_from_Parser();  // get string for factory
+
       switch ( g_states )
       {
         case ERROR_STATE:                           // error states have same result
@@ -81,8 +84,8 @@ void loop()
           break;
         case ORDER_SUCCESSFUL:                      // initiate order
           
-          AnswerOrder= myAuftragsverwaltung.NewOrderRegistered(parser_return_string, numberoforders, RemainingTime_Sek); 
-          Serial.println("Auftragsverwaltung responds with: " + AnswerOrder);
+          received_string = myAuftragsverwaltung.NewOrderRegistered(received_string, numberoforders, RemainingTime_Sek); 
+          Serial.println("Auftragsverwaltung responds with: " + received_string);
           break;
         case BROADCAST:                             // dunno
           break;
@@ -97,7 +100,7 @@ void loop()
         
       }
 
-      myWiFiService.Send( parser_return_string );                       // send answer back to client      
+      myWiFiService.Send( received_string );                       // send answer back to client      
       
       if( g_error_count > MAX_ERROR_COUNT_SESSION)                      // check whether error count exceeds limit
       {

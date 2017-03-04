@@ -47,9 +47,7 @@ void timerRuntime()
         RemainingTime_Sek = OrderProcessTime_Sek-(round((millis()-StartTime_MillSek)/1000));      //compute remaining time
         if (TimerDebug)
         {
-          Serial.print("Factory needs ");
           Serial.print(RemainingTime_Sek);
-          Serial.print(" seconds to terminate orders. #of orders: ");
           Serial.println(numberoforders);
         }      
       }
@@ -57,7 +55,7 @@ void timerRuntime()
       {
         if (TimerDebug)
         {
-        Serial.println("Factory is on idle (no orders registered)");                            //factory is on idle right now
+                        //factory is on idle right now
         }
       }
 
@@ -92,7 +90,6 @@ void ActivityTimeout()
 {
   if (TimerDebug)
   {
-    Serial.println("User seems to be sleeping.Deconnecting user... ");
   }
   
  //code for: 
@@ -116,7 +113,7 @@ void FactoryTerminatedOneOrder()                                   //factory exe
   {
     if (TimerDebug)
     {
-      Serial.print("All orders terminated (time: ");
+      
       Serial.print(millis());
       Serial.println(")");
     }
@@ -127,7 +124,7 @@ void FactoryTerminatedOneOrder()                                   //factory exe
   {
     if (TimerDebug)
     {
-       Serial.print("Factory ready with one order. Remaining orders= ");
+       
        Serial.println(numberoforders);
     }
 

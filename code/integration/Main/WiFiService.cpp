@@ -47,8 +47,8 @@ WiFiService::WiFiService()
   StartStopCharType = 0;
   StringCounter = 3;
   RxString[0].reserve(50);
-  RxString[1].reserve(50);
-  RxString[2].reserve(50);
+  RxString[1].reserve(1);
+  RxString[2].reserve(1);
 
 }
 
@@ -101,7 +101,10 @@ void WiFiService::Run(bool bo)
 		DEBUG_MODE("String Complete")
 		StringComplete();
 	} 
-
+  if (mySerial.overflow()) 
+  {
+    Serial.println("SoftwareSerial overflow!"); 
+  }
   HWtoSWSerial();
 }
 
@@ -291,61 +294,6 @@ char WiFiService::Get_bool(bool Variable)
 
 void WiFiService::Debug_ShowAll()
 {
-  char tempchar;
-  
-  Serial.write("SawEndChar: ");
-  tempchar = Get_bool(SawEndChar);
-  Serial.write(tempchar);
-  Serial.println("");
 
-  Serial.write("SawStartChar: ");
-  tempchar = Get_bool(SawStartChar);
-  Serial.write(tempchar);
-  Serial.println("");
-
-  Serial.write("ptrSendtoSerialMonitor: ");
-  tempchar = Get_bool(ptrSendtoSerialMonitor);
-  Serial.write(tempchar);
-  Serial.println("");
-
-  Serial.write("ptrStartChar[1]: ");
-  Serial.write(ptrStartChar[1]);
-  Serial.println("");
-
-  Serial.write("ptrStartChar[2]: ");
-  Serial.write(ptrStartChar[2]);
-  Serial.println("");
-  
-  Serial.write("ptrEndChar[1]: ");
-  Serial.write(ptrEndChar[1]);
-  Serial.println("");
-
-  Serial.write("ptrEndChar[2]: ");
-  Serial.write(ptrEndChar[2]);
-  Serial.println("");
-
-  Serial.write("CurrentString: ");
-  Serial.print(CurrentString);
-  Serial.println("");
-
-  Serial.write("RxString[0]: ");
-  Serial.print(RxString[0]);
-  Serial.println("");
-
-  Serial.write("RxString[1]: ");
-  Serial.print(RxString[1]);
-  Serial.println("");
-
-  Serial.write("RxString[2]: ");
-  Serial.print(RxString[2]);
-  Serial.println("");
-
-  Serial.write("StringCounter: ");
-  Serial.print(StringCounter);
-  Serial.println("");
-
-  Serial.write("RxString[StringCounter-1]: ");
-  Serial.print(RxString[StringCounter-1]);
-  Serial.println("");
 }
 
