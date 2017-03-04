@@ -52,6 +52,7 @@ void loop()
   timerRuntime();                                                       // example output timer
   myWiFiService.Run(true);                                              // continous wifi check
   delay( 1000 );
+  String parser_return_string = "";
   if ( myWiFiService.String_Is_Complete() )                             // package received
   {
     if (myWiFiService.String_Is_Complete())
@@ -61,7 +62,7 @@ void loop()
       
       String received_string = myWiFiService.Read();                    // get string from Wifly
       g_states = myParser.RunParser(received_string, 0, 0);             // interpret string
-      String parser_return_string = myParser.Get_String_from_Parser();  // get string for factory
+      parser_return_string = myParser.Get_String_from_Parser();  // get string for factory
 
       switch ( g_states )
       {
@@ -77,7 +78,7 @@ void loop()
         case LOGOUT_SUCCESSFUL:                     // do nothing?
           break;
         case ORDER_SUCCESSFUL:                      // initiate order
-          myAuftragsverwaltung.NewOrderRegistered( parser_return_string, 0); // TODO: where do we get the time from (set to 0 now) ?
+          myAuftragsverwaltung.NewOrderRegistered( 1, 0); // TODO: where do we get the time from (set to 0 now) ?
           break;
         case BROADCAST:                             // dunno
           break;
@@ -100,7 +101,6 @@ void loop()
         // kick out function    
       }
     }
-  }
 }
 
 
