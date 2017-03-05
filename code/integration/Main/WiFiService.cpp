@@ -6,14 +6,14 @@
 //DEBUGGING
 #define DEBUG
 #ifdef DEBUG
-#define DEBUG_PRINT(x)  Serial.print("DEBUG: "); Serial.println (x,HEX);
+#define DEBUG_PRINT(x)  Serial.print(F("DEBUG: ")); Serial.println (x,HEX);
 #else
 #define DEBUG_PRINT(x)
 #endif
 
 //#define DEBUG_MODE
 #ifdef DEBUG_MODE
-#define DEBUG_MODE(x)  Serial.print("DEBUG_MODE: "); Serial.println (x);
+#define DEBUG_MODE(x)  Serial.print(F("DEBUG_MODE: ")); Serial.println (x);
 #else
 #define DEBUG_MODE(x)
 #endif
@@ -46,7 +46,7 @@ WiFiService::WiFiService()
   CurrentString = "";
   StartStopCharType = 0;
   StringCounter = 3;
-  RxString[0].reserve(50);
+  RxString[0].reserve(57);
   RxString[1].reserve(1);
   RxString[2].reserve(1);
 
@@ -103,7 +103,7 @@ void WiFiService::Run(bool bo)
 	} 
   if (mySerial.overflow()) 
   {
-    Serial.println("SoftwareSerial overflow!"); 
+    Serial.println(F("SoftwareSerial overflow!")); 
   }
   HWtoSWSerial();
 }

@@ -38,12 +38,12 @@ void setup()
 
   if ( setupTimer() == true )   // init timer module
   {
-    Serial.print("TimerSetupSuccessful\r\n" );
+    Serial.print(F("TimerSetupSuccessful\r\n") );
   }
-  else Serial.print("TimerSetupFailed\r\n" );
+  else Serial.print(F("TimerSetupFailed\r\n") );
 
   myWiFiService.Init();         // init Wifi class
-  received_string.reserve( 45 );
+  received_string.reserve( 55 );
 }
 
 
@@ -61,7 +61,7 @@ void loop()
     if (myWiFiService.String_Is_Complete())
     {
       Serial.println("");
-      Serial.println("String detected!");
+      Serial.println(F("String detected!"));
       
       received_string = myWiFiService.Read();                    // get string from Wifly
       
@@ -85,7 +85,8 @@ void loop()
         case ORDER_SUCCESSFUL:                      // initiate order
           
           received_string = myAuftragsverwaltung.NewOrderRegistered(received_string, numberoforders, RemainingTime_Sek); 
-          Serial.println("Auftragsverwaltung responds with: " + received_string);
+          Serial.print(F("Auftragsverwaltung responds with: "));
+          Serial.print( received_string );
           break;
         case BROADCAST:                             // dunno
           break;

@@ -17,8 +17,8 @@
 //Constructor
 Parser::Parser()
 {
-  Password = "a";
-  ReceivedString.reserve(50);
+  Password = "ilias2017";
+  ReceivedString.reserve(57);
 
 }
 
@@ -30,10 +30,8 @@ Parser::Parser()
 
 String Parser::Loginmanagement(String ReceivedString_old, int Orders, int Time)
 {
-  //Serial.println("START LOGIN MANAGEMENT"); // alex_debug
   Serial.println(ReceivedString); // alex_debug
   String StringToBeReturned;
-  //Serial.println("Loginmanagement string: " + ReceivedString); // alex_debug
   String CommonAnswer = "SIGN_IN_RS%" + String(Orders) + "%" + String(Time) + "%";
   int pos = ReceivedString.indexOf("%");
   String ReceivedPassword = ReceivedString.substring(pos+1);//, ReceivedString.length()-1);
@@ -46,7 +44,7 @@ String Parser::Loginmanagement(String ReceivedString_old, int Orders, int Time)
   }
   else
   {
-    Serial.print("pwWrong");  
+    Serial.print(F("pwWrong"));  
     StringToBeReturned = CommonAnswer + "PW_WRONG";
     Returnvalue = LOGIN_PW_WRONG;
   }
@@ -82,21 +80,17 @@ String Parser::Logoutmanagement(String ReceivedString_old, int Orders, int Time)
 
 String Parser::Ordermanagement(String ReceivedString_old, int Orders, int Time)
 {
-  //Serial.println("START ORDERMANAGEMENT");  // alex_debug
-  Serial.println("str:" + ReceivedString); // alex_debug
+  Serial.print(F("str:"));
+  Serial.println(ReceivedString); // alex_debug
   String StringToBeReturned;
   String CommonAnswer_Part1 = "ORDER_RS%";
   String CommonAnswer_Part2 =  String(Orders) + "%" + String(Time);
   int pos1 = ReceivedString.indexOf("%");
-  Serial.println("pos1:" + pos1); // alex_debug
   String SecondPart = ReceivedString.substring(pos1+1);
-  Serial.println("2nd: " + ReceivedString); // alex_debug
   int pos2 = SecondPart.indexOf("%");
-  Serial.println("pos2:" + pos2); // alex_debug
   String ReceivedPassword = SecondPart.substring(0,pos2);
-  Serial.println("rpw:" + ReceivedPassword); // alex_debug
   String ThirdPart = SecondPart.substring(pos2+1);
-  Serial.println("3rd:" + ThirdPart); // alex_debug
+
   if (ReceivedPassword==Password)
   {
     bool StringOK = CheckString(ThirdPart);
@@ -140,7 +134,7 @@ String Parser::Broadcastmanagement()
 states Parser::RunParser(String ReceivedString_old,int Orders, int RemainingTime)
 {
   
-  Serial.print("RunParser string: "); // alex_debug
+  Serial.print(F("RunParser string: ")); // alex_debug
   Serial.println(ReceivedString); // alex_debug
   
   
@@ -171,7 +165,7 @@ states Parser::RunParser(String ReceivedString_old,int Orders, int RemainingTime
   String FirstWord = ReceivedString.substring(0,DelimiterPosition); 
   if(FirstWord=="SIGN_IN")
     {
-      Serial.println("Anmeldung");
+      Serial.println(F("Anmeldung"));
       Serial.println(ReceivedString); // alex_debug
       Answer = Loginmanagement(ReceivedString,numberoforders,RemainingTime_Sek);
     }
