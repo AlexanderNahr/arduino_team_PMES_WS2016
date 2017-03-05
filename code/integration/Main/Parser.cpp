@@ -18,6 +18,8 @@
 Parser::Parser()
 {
   Password = "ilias2017";
+  ReceivedString.reserve(57);
+
 }
 
 
@@ -26,12 +28,15 @@ Parser::Parser()
 //->checks if the password is correct and returns the string to be sent to the App
 //->updates the Returnvalue
 
-String Parser::Loginmanagement(String ReceivedString, int Orders, int Time)
+String Parser::Loginmanagement(String ReceivedString_old, int Orders, int Time)
 {
+  Serial.println(ReceivedString); // alex_debug
   String StringToBeReturned;
   String CommonAnswer = "SIGN_IN_RS%" + String(Orders) + "%" + String(Time) + "%";
   int pos = ReceivedString.indexOf("%");
-  String ReceivedPassword = ReceivedString.substring(pos+1);
+  String ReceivedPassword = ReceivedString.substring(pos+1);//, ReceivedString.length()-1);
+ // Serial.println("Loginmanagement pw: " + ReceivedPassword); // alex_debug
+  
   if (ReceivedPassword==Password)
   {
     StringToBeReturned = CommonAnswer + "SUCCESSFUL";
@@ -39,6 +44,7 @@ String Parser::Loginmanagement(String ReceivedString, int Orders, int Time)
   }
   else
   {
+    Serial.print(F("pwWrong"));  
     StringToBeReturned = CommonAnswer + "PW_WRONG";
     Returnvalue = LOGIN_PW_WRONG;
   }
@@ -50,7 +56,7 @@ String Parser::Loginmanagement(String ReceivedString, int Orders, int Time)
 //->checks if the password is correct and returns the string to be sent to the App
 //->updates the Returnvalue
 
-String Parser::Logoutmanagement(String ReceivedString, int Orders, int Time)
+String Parser::Logoutmanagement(String ReceivedString_old, int Orders, int Time)
 {
   String StringToBeReturned= "SIGN_OUT";
   int pos = ReceivedString.indexOf("%");
@@ -72,8 +78,10 @@ String Parser::Logoutmanagement(String ReceivedString, int Orders, int Time)
 //->returns the string to be sent to the App
 //->updates the Returnvalue
 
-String Parser::Ordermanagement(String ReceivedString, int Orders, int Time)
+String Parser::Ordermanagement(String ReceivedString_old, int Orders, int Time)
 {
+  Serial.print(F("str:"));
+  Serial.println(ReceivedString); // alex_debug
   String StringToBeReturned;
   String CommonAnswer_Part1 = "ORDER_RS%";
   String CommonAnswer_Part2 =  String(Orders) + "%" + String(Time);
@@ -82,6 +90,7 @@ String Parser::Ordermanagement(String ReceivedString, int Orders, int Time)
   int pos2 = SecondPart.indexOf("%");
   String ReceivedPassword = SecondPart.substring(0,pos2);
   String ThirdPart = SecondPart.substring(pos2+1);
+
   if (ReceivedPassword==Password)
   {
     bool StringOK = CheckString(ThirdPart);
@@ -122,17 +131,22 @@ String Parser::Broadcastmanagement()
 //->returns the integer value (Returnvalue), which controls the main state machine
 //->updates the string to be sent to the App
 
-states Parser::RunParser(String ReceivedString,int Orders, int RemainingTime)
+states Parser::RunParser(String ReceivedString_old,int Orders, int RemainingTime)
 {
-  String ReceivedString_NoDelim = ReceivedString.substring(1,ReceivedString.length()-1); 
+  
+  Serial.print(F("RunParser string: ")); // alex_debug
+  Serial.println(ReceivedString); // alex_debug
+  
+  
   if (ReceivedString.charAt(0)=='*')
   {
-    if (ReceivedString_NoDelim == "OPEN")
+    ReceivedString = ReceivedString.substring(1,ReceivedString.length()-1); 
+    if (ReceivedString == "OPEN")
     {
       Answer = "OPEN";
       Returnvalue = CLIENT_CONNECT; 
     }
-    else if (ReceivedString_NoDelim == "CLOS")
+    else if (ReceivedString == "CLOS")
     {
       Answer = "CLOS";
       Returnvalue = CLIENT_DISCONNECT;
@@ -141,39 +155,39 @@ states Parser::RunParser(String ReceivedString,int Orders, int RemainingTime)
     {
       Answer = "ERROR";
       Returnvalue = ERROR_STATE;
-      Serial.println("I was here");
+      
     }
   }
   else 
   {
-    int DelimiterPosition = ReceivedString_NoDelim.indexOf("%");
-  String FirstWord = ReceivedString_NoDelim.substring(0,DelimiterPosition); 
+    ReceivedString = ReceivedString.substring(1,ReceivedString.length()-1); 
+    int DelimiterPosition = ReceivedString.indexOf("%");
+  String FirstWord = ReceivedString.substring(0,DelimiterPosition); 
   if(FirstWord=="SIGN_IN")
     {
-      Serial.println("Anmeldung");
-      Answer = Loginmanagement(ReceivedString_NoDelim,0,0);
+      Serial.println(F("Anmeldung"));
+      Serial.println(ReceivedString); // alex_debug
+      Answer = Loginmanagement(ReceivedString,numberoforders,RemainingTime_Sek);
     }
     else if (FirstWord=="ORDER")
-        {
-          Answer = Ordermanagement(ReceivedString_NoDelim,0,0);
-          Answer = "[" + Answer + "]\n";
-        }
-        else if (FirstWord=="SIGN_OUT")
-            {
-             Answer = Logoutmanagement(ReceivedString_NoDelim,0,0); 
-             Answer = "[" + Answer + "]\n";
-            }
-       else if (FirstWord == "BROADCAST")
-            {
-              Answer = Broadcastmanagement();
-              Answer = "[" + Answer + "]\n";
-            }
-       else
-            {
-              Returnvalue = ERROR_STATE;
-              Answer = "ERROR";
-              Answer = "[" + Answer + "]\n";
-            }
+    {
+      Answer = Ordermanagement(ReceivedString,numberoforders,RemainingTime_Sek);
+      //Returnvalue=ORDER_SUCCESSFUL; (nur für Iza aktivieren!)
+    }
+    else if (FirstWord=="SIGN_OUT")
+    {
+      Answer = Logoutmanagement(ReceivedString,numberoforders,RemainingTime_Sek); 
+    }
+    else if (FirstWord == "BROADCAST")
+    {
+      Answer = Broadcastmanagement();
+    }
+    else
+    {
+      Returnvalue = ERROR_STATE;
+      Answer = "ERROR";
+    }
+    Answer = "[" + Answer + "]\n";      // set termination character
   }
   return Returnvalue;
 }
