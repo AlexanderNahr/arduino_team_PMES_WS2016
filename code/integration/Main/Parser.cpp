@@ -176,27 +176,24 @@ states Parser::RunParser(String ReceivedString_old,int Orders, int RemainingTime
       Answer = Loginmanagement(ReceivedString,numberoforders,RemainingTime_Sek);
     }
     else if (FirstWord=="ORDER")
-        {
-          Answer = Ordermanagement(ReceivedString,numberoforders,RemainingTime_Sek);
-          //Returnvalue=ORDER_SUCCESSFUL; (nur für Iza aktivieren!)
-          Answer = "[" + Answer + "]\n";
-        }
-        else if (FirstWord=="SIGN_OUT")
-            {
-             Answer = Logoutmanagement(ReceivedString,numberoforders,RemainingTime_Sek); 
-             Answer = "[" + Answer + "]\n";
-            }
-       else if (FirstWord == "BROADCAST")
-            {
-              Answer = Broadcastmanagement();
-              Answer = "[" + Answer + "]\n";
-            }
-       else
-            {
-              Returnvalue = ERROR_STATE;
-              Answer = "ERROR";
-              Answer = "[" + Answer + "]\n";
-            }
+    {
+      Answer = Ordermanagement(ReceivedString,numberoforders,RemainingTime_Sek);
+      //Returnvalue=ORDER_SUCCESSFUL; (nur für Iza aktivieren!)
+    }
+    else if (FirstWord=="SIGN_OUT")
+    {
+      Answer = Logoutmanagement(ReceivedString,numberoforders,RemainingTime_Sek); 
+    }
+    else if (FirstWord == "BROADCAST")
+    {
+      Answer = Broadcastmanagement();
+    }
+    else
+    {
+      Returnvalue = ERROR_STATE;
+      Answer = "ERROR";
+    }
+    Answer = "[" + Answer + "]\n";      // set termination character
   }
   return Returnvalue;
 }
