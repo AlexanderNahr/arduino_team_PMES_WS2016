@@ -26,7 +26,7 @@ class Auftragsverwaltung
 
   //Public Functions and Variables that can be accessed from the Main Loop
   
-  void NewClientDetected();
+  bool NewClientDetected(bool LastClientSignedOut);
   String NewOrderRegistered(String StringFromParser,int Orders, int Time);
   
 
@@ -35,6 +35,7 @@ class Auftragsverwaltung
   int MaxNoOfOrders;
   int ClientTotalOrders;
   bool NewClient;
+  
    
   
 };

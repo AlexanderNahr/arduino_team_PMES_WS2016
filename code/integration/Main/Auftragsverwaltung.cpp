@@ -13,11 +13,13 @@
 #include "driver_timer.h"   
 #include "Auftragsverwaltung.h"
 
+
 //Constructor
 Auftragsverwaltung::Auftragsverwaltung()
 {
   NewClient = true;
   MaxNoOfOrders = 5;
+  ClientTotalOrders=0;
 }
 
 
@@ -25,11 +27,17 @@ Auftragsverwaltung::Auftragsverwaltung()
 //Function NewClientDetected:
 //->sets/resets some variables (like an init)
 //->starts activity timer if ordering is theoretically allowed (=factory on idle) 
-void Auftragsverwaltung::NewClientDetected()
+bool Auftragsverwaltung::NewClientDetected(bool LastClientSignedOut)
 {
-      NewClient = true;
-      counter= 0;
-      ClientTotalOrders = 0;
+      if (LastClientSignedOut)
+      {
+        NewClient = true; 
+        LastClientSignedOut = false; 
+        counter= 0;
+        ClientTotalOrders = 0;
+      }
+      
+     
       
       //if ordering possible-> start tracing activity of client (in case of no activity, client will be disconnected)
       if (numberoforders==0)
@@ -41,6 +49,7 @@ void Auftragsverwaltung::NewClientDetected()
         DoDisable_myActivityTimer = false;
         //end if timer activation
       }
+      return LastClientSignedOut;
 }
 /**********************************************************************************************************************/
 //Function NewOrderRegistered:
@@ -48,13 +57,12 @@ void Auftragsverwaltung::NewClientDetected()
 String Auftragsverwaltung::NewOrderRegistered(String StringFromParser,int Orders, int Time)
 {
         String myAnswerString="";
-        
         //if max allowed orders from client reached: inform client
-        if (ClientTotalOrders>=MaxNoOfOrders)
+        if ((ClientTotalOrders>=MaxNoOfOrders)&&(NewClient == false))
         {
           
           //Serial.println("ORDERING NOT ALLOWED: Client has reached the allowed limit (5 orders/client");
-          myAnswerString = "ORDER_RS%MAX_REACHED%" + String(Orders) + "%" + String(Time);
+          myAnswerString = "ORDER_RS%ERROR%" + String(Orders) + "%" + String(Time);
           myAnswerString = "[" + myAnswerString + "]\n";
           
         }
@@ -64,10 +72,7 @@ String Auftragsverwaltung::NewOrderRegistered(String StringFromParser,int Orders
           timer.enable(myActivityTimerId);
           timer.restartTimer(myActivityTimerId);
           DoDisable_myActivityTimer = false;
-          //end of timer activation
-          
-          //increment counter 
-          ClientTotalOrders++;
+          //end of timer activation                 
 
           //new client, but still not terminated orders in the factory: inform client, that ordering not possible
           if ((numberoforders!=0)&&(NewClient))
@@ -81,6 +86,8 @@ String Auftragsverwaltung::NewOrderRegistered(String StringFromParser,int Orders
           //old client 
           else
           {
+            //increment counter 
+            ClientTotalOrders++;
             timer.enable(myOrderTimerId);                              //enable the formerly disabled timer    
             if ((NewClient)||(numberoforders==0))
             {
