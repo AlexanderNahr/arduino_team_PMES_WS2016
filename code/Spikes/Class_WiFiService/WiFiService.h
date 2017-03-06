@@ -18,6 +18,7 @@ class WiFiService
   void Init();
   void Run(bool bo);
   void Send(String str);
+  void SendtoExternal(String str);
   bool String_Is_Complete();
   String GetString(int n);
   String Read();

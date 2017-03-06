@@ -13,7 +13,7 @@ void setup()
   Serial.begin(9600);     // Set data rate for the HW serial port
   while (!Serial) {;}     // wait for HW serial port to connect.
   myWiFiService.Init();  
-  myWiFiService.Debug_ShowAll();
+  //myWiFiService.Debug_ShowAll();
 }
 
 
@@ -33,6 +33,7 @@ void loop()
 	Serial.println(myWiFiService.GetString(3));*/
   String str = myWiFiService.Read();
   myWiFiService.Send(str);
+  myWiFiService.SendtoExternal(str);
 	Serial.println("SHOW ALL:");
 	myWiFiService.Debug_ShowAll();
   }
