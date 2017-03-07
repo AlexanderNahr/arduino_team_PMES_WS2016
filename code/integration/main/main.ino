@@ -25,8 +25,9 @@ STATES g_states;                          //!< states for state machine
 byte g_error_count = 0;                   //!< counts erroneous messages received, resets when client disconnects
 #define MAX_ERROR_COUNT_SESSION 5         //!< max number of allowed erroneous message per sessions 
 
-String received_string;
+String received_string,received_string_Auftrag;
 bool LastClientSignedOut=true;
+String StringToFab;
 
 /****************************************************************************************************************//*
    \brief     initialization
@@ -54,7 +55,7 @@ void loop()
 {
   timerRuntime();                                                       // example output timer
   myWiFiService.Run(true);                                              // continous wifi check
-  delay( 1000 );
+  //delay( 1000 );
 
   if ( myWiFiService.String_Is_Complete() )                             // package received
   {
@@ -93,11 +94,21 @@ void loop()
           LastClientSignedOut=myAuftragsverwaltung.NewClientDetected(LastClientSignedOut);
           break;
         case ORDER_SUCCESSFUL:
-          received_string = myAuftragsverwaltung.NewOrderRegistered(received_string, numberoforders, RemainingTime_Sek); 
-          myWiFiService.Send( received_string );
+          if (!LastClientSignedOut)
+          {
+            received_string_Auftrag = myAuftragsverwaltung.NewOrderRegistered(received_string, numberoforders, RemainingTime_Sek);
+            if ((received_string_Auftrag.indexOf("EXT_ORDER")==-1) && (received_string_Auftrag.indexOf("ERROR")==-1))
+            {
+              StringToFab = myParser.ToFactory();
+              AddStringToArray(StringToFab);
+               
+            }
+            myWiFiService.Send( received_string_Auftrag );
+          }
+          
           
           Serial.print(F("Auftragsverwaltung responds with: "));
-          Serial.print( received_string );
+          Serial.print( received_string_Auftrag );
           break;
         case BROADCAST:                             // dunno
           myWiFiService.Send( received_string );

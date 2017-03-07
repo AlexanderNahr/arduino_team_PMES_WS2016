@@ -35,6 +35,7 @@ bool setupTimer();
 void ActivityTimeout();
 void FactoryTerminatedOneOrder();
 void timerDebug(bool Setting);
+void AddStringToArray(String NewString);
 #endif  // DRIVER_TIMER_H
 
 
