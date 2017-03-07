@@ -19,7 +19,8 @@
 #endif
 
 // Create SoftwareSerial object
-SoftwareSerial mySerial(10, 11); // RX, TX
+SoftwareSerial serialWiFi(10, 11); // RX, TX
+SoftwareSerial serialExtern(8, 9); // RX, TX
 
 //Constructor
 WiFiService::WiFiService()
@@ -55,14 +56,18 @@ WiFiService::WiFiService()
 
 void WiFiService::Init()
 {
-  mySerial.begin(9600);   // Set data rate for the SW serial port
-  while (!mySerial) {;}   // wait for SW serial port to connect.
+  serialWiFi.begin(9600);   // Set data rate for the SW serial port
+  while (!serialWiFi) { ; }   // wait for SW serial port to connect.
+
+  serialExtern.begin(9600);   // Set data rate for the SW serial port
+  while (!serialExtern) { ; }   // wait for SW serial port to connect.
 
 }
 
 
 void WiFiService::Run(bool bo)
 {
+	serialWiFi.listen();
 	//Set Approval to True
 	WiFiMode = bo;
 	if (WiFiMode) {Approval = WiFiMode;}
@@ -73,6 +78,12 @@ void WiFiService::Run(bool bo)
 	{
 		DEBUG_MODE("Idle")
 		Idle();
+	}
+
+	if (GoToPrepare)
+	{
+		DEBUG_MODE("Prepare_for_next_String")
+			Prepare_for_next_String();
 	}
 
 	//Mode "Wait_for_Start_Character"
@@ -88,12 +99,6 @@ void WiFiService::Run(bool bo)
 		DEBUG_MODE("Build String") 
 		BuildString();              
 	} 
-
-	if (GoToPrepare)
-	{
-		DEBUG_MODE("Prepare_for_next_String")
-		Prepare_for_next_String();
-	}
   
     //Mode "String Complete"
 	if (SawEndChar)  
@@ -108,7 +113,14 @@ void WiFiService::Run(bool bo)
 void WiFiService::Send(String str)
 {
 
-		mySerial.print(str);
+		serialWiFi.print(str);
+}
+
+void WiFiService::SendtoExternal(String str)
+{
+	serialExtern.listen();
+	serialExtern.print(str);
+	serialWiFi.listen();
 }
 
 //Modes
@@ -123,9 +135,9 @@ void WiFiService::Idle()
 // When detected, StringInProgress = true and rxString = "["
 void WiFiService::Wait_for_Start_Character()
 {
-		while (mySerial.available() && !SawStartChar)
+		while (serialWiFi.available() && !SawStartChar)
 		{
-			SerialChar = mySerial.read();
+			SerialChar = serialWiFi.read();
 			if (IsStartChar(SerialChar))
 			{
 				CurrentString = SerialChar;
@@ -136,7 +148,7 @@ void WiFiService::Wait_for_Start_Character()
 			{
 				if (ptrSendtoSerialMonitor)
 				{
-					Serial.write(SerialChar); // Serial.write(mySerial.read());
+					Serial.write(SerialChar); // Serial.write(serialWiFi.read());
 				}
 			}		
 		}
@@ -148,9 +160,9 @@ void WiFiService::Wait_for_Start_Character()
 // until End Character is detected
 void WiFiService::BuildString()
 {
-          while (mySerial.available() && !SawEndChar)
+          while (serialWiFi.available() && !SawEndChar)
           {
-			  SerialChar = (char)mySerial.read();
+			  SerialChar = (char)serialWiFi.read();
 
 			  if (!SawEndChar)
 			  {
@@ -210,7 +222,7 @@ void WiFiService::HWtoSWSerial()
 {
     while (Serial.available())   
 	{
-		mySerial.write(Serial.read());
+		serialWiFi.write(Serial.read());
 	} 
 
 }
