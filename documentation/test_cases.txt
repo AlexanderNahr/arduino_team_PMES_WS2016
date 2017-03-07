@@ -1,0 +1,69 @@
+This is a draft for a test case document for black box testing. TCP IP client (e.g. hercules or preferably Android App) is 
+required and Wifly module needs to be set up.
+Arduino needs to be connected to PC and Arduino Serial monitor should be running to see debug traces.
+Send the below strings through the TCP/IP client to the Wifly module and watch the arduino answering. The messages
+"Expected return" should be displayed in the TCP/IP client.
+
+
+Test Case 0: Connect as a client
+use TCP/IP client to connect to Wifi with IP 1.2.3.4 and port 2000.
+
+Expected return:
+*HELLO*
+
+Test Case 1: Sign in - incorrect
+[SIGN_IN%a]
+
+Expected return:
+[SIGN_IN_RS%0%0%PW_WRONG]
+
+Test Case 2: Sign in - correct
+[SIGN_IN%ilias2017]
+
+Expected return:
+[SIGN_IN_RS%0%0%SUCCESSFUL]
+
+Test Case 3: Sign in - keep alive signal
+[SIGN_IN%ilias2017]
+
+Expected return:
+*HELLO*
+NOTE: currently [SIGN_IN_RS%0%0%SUCCESSFUL] is sent back
+
+Test Case 3: Order - correct
+[ORDER%ilias2017%6;1;00244;10342;61130;30534;51221;21413]
+
+Expected return
+[ORDER_RS%SUCCESSFUL%0%0]
+
+Test Case 4: Order - wrong password 
+[ORDER%a%1;2;11111;22222;33333]
+
+Expected return:
+ORDER_RS%PW_WRONG%1%27]
+
+Test Case 5:  Log out
+[SIGN_OUT]
+
+Expected return:
+[SIGN_OUT_SUCCESSFUL]
+
+
+// below test cases not fully developed
+
+Disconnect module to reset it.
+Valid Sign In
+
+Test Case 6: Order - MAXIMUM single order
+[20;1;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244]
+
+Test Case 7: Order - multiple MAXIMUM
+NOTE: 4 weitere Bestellungen senden
+[20;1;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244]
+[20;1;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244]
+[20;1;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244]
+[20;1;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244]
+
+Test Case 8: Order - exceed multiple MAXIMUM
+NOTE: 1 weitere Bestellungen
+[20;1;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244;00244]
