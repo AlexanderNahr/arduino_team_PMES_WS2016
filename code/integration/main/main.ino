@@ -26,7 +26,7 @@ byte g_error_count = 0;                   //!< counts erroneous messages receive
 #define MAX_ERROR_COUNT_SESSION 5         //!< max number of allowed erroneous message per sessions 
 
 String received_string;
-
+bool LastClientSignedOut=true;
 
 /****************************************************************************************************************//*
    \brief     initialization
@@ -72,28 +72,40 @@ void loop()
       switch ( g_states )
       {
         case ERROR_STATE:                           // error states have same result
+          myWiFiService.Send( received_string );
+          break;
         case LOGIN_PW_WRONG:                        // error counter ++
-        case LOGOUT_PW_WRONG:                        
-        case ORDER_WRONG:                           
-        case ORDER_PW_WRONG:                        
-          g_error_count++;
+          myWiFiService.Send( received_string );
+          break;
+        case LOGOUT_SUCCESSFUL:
+          LastClientSignedOut=true;
+          break;  
+        //WE DO NOT HAVE THIS CASE ANYMORE                      
+        case ORDER_WRONG:   
+          myWiFiService.Send( received_string );                        
+          break;
+        case ORDER_PW_WRONG:                       
+          //g_error_count++;
+          myWiFiService.Send( received_string );
+          break;
         case LOGIN_SUCCESSFUL:                      // client detected
-          myAuftragsverwaltung.NewClientDetected();
+          myWiFiService.Send( received_string );
+          LastClientSignedOut=myAuftragsverwaltung.NewClientDetected(LastClientSignedOut);
           break;
-        case LOGOUT_SUCCESSFUL:                     // do nothing?
-          break;
-        case ORDER_SUCCESSFUL:                      // initiate order
-          
+        case ORDER_SUCCESSFUL:
           received_string = myAuftragsverwaltung.NewOrderRegistered(received_string, numberoforders, RemainingTime_Sek); 
+          myWiFiService.Send( received_string );
+          
           Serial.print(F("Auftragsverwaltung responds with: "));
           Serial.print( received_string );
           break;
         case BROADCAST:                             // dunno
+          myWiFiService.Send( received_string );
           break;
         case CLIENT_CONNECT:                        // do nothing, pw not set yet
           break;
         case CLIENT_DISCONNECT:                     // *CLOS* detected -> client left network
-          g_error_count = 0;                        // reset error count (should be in Auftragsverwaltung)
+          //g_error_count = 0;                        // reset error count (should be in Auftragsverwaltung)
           break;
         default:
           break;              
@@ -101,13 +113,13 @@ void loop()
         
       }
 
-      myWiFiService.Send( received_string );                       // send answer back to client      
+      //myWiFiService.Send( received_string );                       // send answer back to client      
       
-      if( g_error_count > MAX_ERROR_COUNT_SESSION)                      // check whether error count exceeds limit
-      {
+      //if( g_error_count > MAX_ERROR_COUNT_SESSION)                      // check whether error count exceeds limit
+     // {
         // send message back before kicking client out?
         // kick out function    
-      }
+     // }
     }
 }
 

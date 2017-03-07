@@ -59,16 +59,17 @@ String Parser::Loginmanagement(String ReceivedString_old, int Orders, int Time)
 String Parser::Logoutmanagement(String ReceivedString_old, int Orders, int Time)
 {
   String StringToBeReturned= "SIGN_OUT";
-  int pos = ReceivedString.indexOf("%");
-  String ReceivedPassword = ReceivedString.substring(pos+1);
-  if (ReceivedPassword==Password)
-  {
-    Returnvalue = LOGOUT_SUCCESSFUL;
-  }
-  else
-  {
-    Returnvalue = LOGOUT_PW_WRONG;
-  }
+  //int pos = ReceivedString.indexOf("%");
+  //String ReceivedPassword = ReceivedString.substring(pos+1);
+  //if (ReceivedPassword==Password)
+  //{
+  //  Returnvalue = LOGOUT_SUCCESSFUL;
+ // }
+ // else
+ // {
+  //  Returnvalue = LOGOUT_PW_WRONG;
+ // }
+ Returnvalue = LOGOUT_SUCCESSFUL;
   return StringToBeReturned;
 }
 
@@ -153,7 +154,7 @@ states Parser::RunParser(String ReceivedString_old,int Orders, int RemainingTime
     }
     else
     {
-      Answer = "ERROR";
+      Answer = "SIGN_IN_RS%" + String(Orders) + "%" + String(RemainingTime)+ "%ERROR";
       Returnvalue = ERROR_STATE;
       
     }
@@ -185,7 +186,7 @@ states Parser::RunParser(String ReceivedString_old,int Orders, int RemainingTime
     else
     {
       Returnvalue = ERROR_STATE;
-      Answer = "ERROR";
+      Answer = "SIGN_IN_RS%" + String(Orders) + "%" + String(RemainingTime)+ "%ERROR";
     }
     Answer = "[" + Answer + "]\n";      // set termination character
   }
