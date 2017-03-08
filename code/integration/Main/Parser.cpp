@@ -18,7 +18,7 @@
 Parser::Parser()
 {
   Password = "ilias2017";
-  ReceivedString.reserve(57);
+  ReceivedString.reserve(142);
   StringToFactory = "";
 
 }
@@ -29,7 +29,7 @@ Parser::Parser()
 //->checks if the password is correct and returns the string to be sent to the App
 //->updates the Returnvalue
 
-String Parser::Loginmanagement(String ReceivedString_old, int Orders, int Time)
+String Parser::Loginmanagement(byte& Orders, int& Time)
 {
   Serial.println(ReceivedString); // alex_debug
   String StringToBeReturned;
@@ -50,6 +50,7 @@ String Parser::Loginmanagement(String ReceivedString_old, int Orders, int Time)
     Returnvalue = LOGIN_PW_WRONG;
   }
   return StringToBeReturned;
+
 }
 
 /**********************************************************************************/
@@ -57,7 +58,7 @@ String Parser::Loginmanagement(String ReceivedString_old, int Orders, int Time)
 //->checks if the password is correct and returns the string to be sent to the App
 //->updates the Returnvalue
 
-String Parser::Logoutmanagement(String ReceivedString_old, int Orders, int Time)
+String Parser::Logoutmanagement(byte& Orders, int& Time)
 {
   String StringToBeReturned= "SIGN_OUT";
   //int pos = ReceivedString.indexOf("%");
@@ -72,6 +73,7 @@ String Parser::Logoutmanagement(String ReceivedString_old, int Orders, int Time)
  // }
  Returnvalue = LOGOUT_SUCCESSFUL;
   return StringToBeReturned;
+
 }
 
 /***********************************************************************************/
@@ -80,7 +82,7 @@ String Parser::Logoutmanagement(String ReceivedString_old, int Orders, int Time)
 //->returns the string to be sent to the App
 //->updates the Returnvalue
 
-String Parser::Ordermanagement(String ReceivedString_old, int Orders, int Time)
+String Parser::Ordermanagement(byte& Orders, int& Time)
 {
   Serial.print(F("str:"));
   Serial.println(ReceivedString); // alex_debug
@@ -134,7 +136,7 @@ String Parser::Broadcastmanagement()
 //->returns the integer value (Returnvalue), which controls the main state machine
 //->updates the string to be sent to the App
 
-states Parser::RunParser(String ReceivedString_old,int Orders, int RemainingTime)
+states Parser::RunParser(byte& Orders, int& RemainingTime)
 {
   
   Serial.print(F("RunParser string: ")); // alex_debug
@@ -170,16 +172,15 @@ states Parser::RunParser(String ReceivedString_old,int Orders, int RemainingTime
     {
       Serial.println(F("Anmeldung"));
       Serial.println(ReceivedString); // alex_debug
-      Answer = Loginmanagement(ReceivedString,numberoforders,RemainingTime_Sek);
+      Answer=Loginmanagement(numberoforders,RemainingTime_Sek);
     }
     else if (FirstWord=="ORDER")
     {
-      Answer = Ordermanagement(ReceivedString,numberoforders,RemainingTime_Sek);
-      //Returnvalue=ORDER_SUCCESSFUL; (nur für Iza aktivieren!)
+      Answer = Ordermanagement(numberoforders,RemainingTime_Sek);
     }
     else if (FirstWord=="SIGN_OUT")
     {
-      Answer = Logoutmanagement(ReceivedString,numberoforders,RemainingTime_Sek); 
+      Answer = Logoutmanagement(numberoforders,RemainingTime_Sek); 
     }
     else if (FirstWord == "BROADCAST")
     {
@@ -200,7 +201,7 @@ states Parser::RunParser(String ReceivedString_old,int Orders, int RemainingTime
 //-> checking rule 1: 7 different ;-delimited strings received?
 //-> checking rule 2: has every string of these 7 the expected length?
 
-bool Parser::CheckString(String OrderString)
+bool Parser::CheckString(String& OrderString)
 {
   int pos,Geom_Int;
   int result = 1;
