@@ -30,6 +30,8 @@ class Parser
   //Public Functions and Variables that can be accessed from the Main Loop
   String Get_String_from_Parser();
   states RunParser(String ReceivedString_old,int Orders, int RemainingTime);
+  String Parser::ToFactory();
+  
   String ReceivedString;
   
 
@@ -38,7 +40,7 @@ class Parser
   String Answer;
   String Password;
   states Returnvalue; 
- 
+  String StringToFactory;
   
   //Private Functions that can NOT be accessed from the Main Loop. They can only be accessed by the class itself.
   String Loginmanagement(String ReceivedString_old, int Orders, int Time);

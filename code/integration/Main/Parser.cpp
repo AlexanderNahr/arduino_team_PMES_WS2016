@@ -19,6 +19,7 @@ Parser::Parser()
 {
   Password = "ilias2017";
   ReceivedString.reserve(57);
+  StringToFactory = "";
 
 }
 
@@ -94,6 +95,7 @@ String Parser::Ordermanagement(String ReceivedString_old, int Orders, int Time)
 
   if (ReceivedPassword==Password)
   {
+    StringToFactory=ThirdPart;
     bool StringOK = CheckString(ThirdPart);
     if (StringOK)
     {
@@ -200,7 +202,7 @@ states Parser::RunParser(String ReceivedString_old,int Orders, int RemainingTime
 
 bool Parser::CheckString(String OrderString)
 {
-  int pos;
+  int pos,Geom_Int;
   int result = 1;
   String Geom, Version,Arrangement;
   bool Status;
@@ -210,7 +212,8 @@ bool Parser::CheckString(String OrderString)
   Geom = OrderString.substring(0,pos);
   if ((Geom.length()<1)or(Geom.length()>2)){result =result *0; }
   OrderString = OrderString.substring(pos+1);
-
+  Geom_Int=Geom.toInt();
+  
   //check second string: Version
   pos = OrderString.indexOf(";");
   Version = OrderString.substring(0,pos);
@@ -218,7 +221,7 @@ bool Parser::CheckString(String OrderString)
   if (Version.length()!=1) {result =result *0;}
 
   //check all six Arrangement strings
-  for (int i=1; i<7; i++)
+  for (int i=1; i<(Geom_Int+1); i++)
   {
     if (pos==-1) {result=result*0;}
     pos = OrderString.indexOf(";");
@@ -249,7 +252,10 @@ String Parser::Get_String_from_Parser()
   return Answer;
 }
 /***************************************************************************************/
-
+String Parser::ToFactory()
+{
+  return StringToFactory;
+}
 
 
 

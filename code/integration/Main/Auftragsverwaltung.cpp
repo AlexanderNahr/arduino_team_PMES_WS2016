@@ -44,9 +44,9 @@ bool Auftragsverwaltung::NewClientDetected(bool LastClientSignedOut)
       {
         OrderProcessTime_Sek=0;                         //if there are no orders left in the queue, reset OrderProcessTime
         //activate timer
-        timer.enable(myActivityTimerId);
-        timer.restartTimer(myActivityTimerId);
-        DoDisable_myActivityTimer = false;
+        //timer.enable(myActivityTimerId);
+        //timer.restartTimer(myActivityTimerId);
+        //DoDisable_myActivityTimer = false;
         //end if timer activation
       }
       return LastClientSignedOut;
@@ -69,9 +69,9 @@ String Auftragsverwaltung::NewOrderRegistered(String StringFromParser,int Orders
         else
         {
           //one order received from client: restart myactivitytimer
-          timer.enable(myActivityTimerId);
-          timer.restartTimer(myActivityTimerId);
-          DoDisable_myActivityTimer = false;
+          //timer.enable(myActivityTimerId);
+          //timer.restartTimer(myActivityTimerId);
+          //DoDisable_myActivityTimer = false;
           //end of timer activation                 
 
           //new client, but still not terminated orders in the factory: inform client, that ordering not possible
