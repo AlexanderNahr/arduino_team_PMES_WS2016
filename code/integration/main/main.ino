@@ -25,7 +25,7 @@ STATES g_states;                          //!< states for state machine
 byte g_error_count = 0;                   //!< counts erroneous messages received, resets when client disconnects
 #define MAX_ERROR_COUNT_SESSION 5         //!< max number of allowed erroneous message per sessions 
 
-String received_string,received_string_Auftrag;
+String received_string_Auftrag;
 bool LastClientSignedOut=true;
 String StringToFab;
 
@@ -63,9 +63,7 @@ void loop()
     {
       Serial.println("");
       Serial.println(F("String detected!"));
-      
-      received_string = myWiFiService.Read();                    // get string from Wifly
-      
+          
       myParser.ReceivedString = received_string;
       g_states = myParser.RunParser("", numberoforders, RemainingTime_Sek);             // interpret string
       received_string = myParser.Get_String_from_Parser();  // get string for factory
