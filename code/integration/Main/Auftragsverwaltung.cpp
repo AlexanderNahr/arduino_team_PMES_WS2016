@@ -27,7 +27,7 @@ Auftragsverwaltung::Auftragsverwaltung()
 //Function NewClientDetected:
 //->sets/resets some variables (like an init)
 //->starts activity timer if ordering is theoretically allowed (=factory on idle) 
-bool Auftragsverwaltung::NewClientDetected(bool LastClientSignedOut)
+bool Auftragsverwaltung::NewClientDetected(bool& LastClientSignedOut)
 {
       if (LastClientSignedOut)
       {
@@ -54,7 +54,7 @@ bool Auftragsverwaltung::NewClientDetected(bool LastClientSignedOut)
 /**********************************************************************************************************************/
 //Function NewOrderRegistered:
 //
-String Auftragsverwaltung::NewOrderRegistered(String StringFromParser,int Orders, int Time)
+String Auftragsverwaltung::NewOrderRegistered(String& StringFromParser,byte& Orders, int& Time)
 {
         String myAnswerString="";
         //if max allowed orders from client reached: inform client
