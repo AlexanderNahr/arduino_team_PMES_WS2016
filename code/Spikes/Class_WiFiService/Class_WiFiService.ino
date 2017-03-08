@@ -3,10 +3,11 @@
 
 #include <Arduino.h>
 #include "WiFiService.h"
-
+#include "common.h"
 
 // Create WiFiService object
 WiFiService myWiFiService;
+
 
 void setup()
 {
@@ -14,6 +15,7 @@ void setup()
   while (!Serial) {;}     // wait for HW serial port to connect.
   myWiFiService.Init();  
   //myWiFiService.Debug_ShowAll();
+  received_string.reserve(143);
 }
 
 
@@ -23,17 +25,15 @@ void loop()
 
   //myWiFiService.Debug_ShowAll();  //-> for Debugging
   myWiFiService.Run(true);
-  delay(1000);
+  //delay(1000);
   if (myWiFiService.String_Is_Complete())
   {
     Serial.println("");
     Serial.print("String detected: ");
-    /*Serial.println(myWiFiService.GetString(1));
-    Serial.println(myWiFiService.GetString(2));
-	Serial.println(myWiFiService.GetString(3));*/
-  String str = myWiFiService.Read();
-  myWiFiService.Send(str);
-  myWiFiService.SendtoExternal(str);
+
+	myWiFiService.Send(received_string);
+	myWiFiService.SendtoExternal(received_string);
+
 	Serial.println("SHOW ALL:");
 	myWiFiService.Debug_ShowAll();
   }

@@ -1,5 +1,6 @@
 #ifndef WiFiService_h
 #define WiFiService_h
+#include "common.h"
 #include <Arduino.h>
 
 #define STARTZEICHEN_1 '['
@@ -7,6 +8,7 @@
 #define ENDZEICHEN_1 ']'
 #define ENDZEICHEN_2 '*'
 #define SENDTOSWSERIAL true
+
 
 class WiFiService
 {
@@ -20,8 +22,6 @@ class WiFiService
   void Send(String str);
   void SendtoExternal(String str);
   bool String_Is_Complete();
-  String GetString(byte n);
-  String Read();
 
   // Debugging Functions
   void Debug_ShowAll();

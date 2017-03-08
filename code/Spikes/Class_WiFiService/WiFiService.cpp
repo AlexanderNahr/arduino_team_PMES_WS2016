@@ -3,20 +3,14 @@
 #include "WiFiService.h"
 #include <SoftwareSerial.h>
 
-//DEBUGGING
-#define DEBUG
-#ifdef DEBUG
-#define DEBUG_PRINT(x)  Serial.print("DEBUG: "); Serial.println (x,HEX);
-#else
-#define DEBUG_PRINT(x)
-#endif
-
-#define DEBUG_MODE
+//#define DEBUG_MODE
 #ifdef DEBUG_MODE
 #define DEBUG_MODE(x)  Serial.print("DEBUG_MODE: "); Serial.println (x);
 #else
 #define DEBUG_MODE(x)
 #endif
+
+String received_string;
 
 // Create SoftwareSerial object
 SoftwareSerial serialWiFi(10, 11); // RX, TX
@@ -47,10 +41,6 @@ WiFiService::WiFiService()
   CurrentString = "";
   StartStopCharType = 0;
   StringCounter = 3;
-  RxString[0].reserve(50);
-  RxString[1].reserve(50);
-  RxString[2].reserve(50);
-
 }
 
 
@@ -180,21 +170,12 @@ void WiFiService::StringComplete()
 {
 	int temp;
 	String strtemp;
-	
-		if (StringCounter < 3)
-		{
-			StringCounter++;
-		}
-		else
-		{
-			StringCounter = 1;
-		}
 
-		strtemp = RxString[StringCounter - 1].length();
+		strtemp = received_string.length();
 		temp = strtemp.toInt();
-		RxString[StringCounter - 1].remove(0, temp);
-		RxString[StringCounter - 1] += CurrentString;
-
+		received_string.remove(0, temp);
+		received_string += CurrentString;
+	
 		GoToPrepare = true;
 		
 }
@@ -227,30 +208,6 @@ void WiFiService::HWtoSWSerial()
 
 }
 
-//Get Functions
-//********************************************************************************************************
-
-String WiFiService::Read()
-{
-	byte tmp;
-	tmp = StringCounter;
-
-	if (StringCounter > 1)
-	{
-		StringCounter--;
-	}
-	else
-	{
-		StringCounter = 3;
-	}
-
-	return RxString[tmp - 1];
-}
-
-String WiFiService::GetString(byte n)
-{
-	return RxString[n-1];
-}
 
 //Basic Check Functions
 //********************************************************************************************************
@@ -340,24 +297,5 @@ void WiFiService::Debug_ShowAll()
   Serial.print(CurrentString);
   Serial.println("");
 
-  Serial.write("RxString[0]: ");
-  Serial.print(RxString[0]);
-  Serial.println("");
-
-  Serial.write("RxString[1]: ");
-  Serial.print(RxString[1]);
-  Serial.println("");
-
-  Serial.write("RxString[2]: ");
-  Serial.print(RxString[2]);
-  Serial.println("");
-
-  Serial.write("StringCounter: ");
-  Serial.print(StringCounter);
-  Serial.println("");
-
-  Serial.write("RxString[StringCounter-1]: ");
-  Serial.print(RxString[StringCounter-1]);
-  Serial.println("");
 }
 
