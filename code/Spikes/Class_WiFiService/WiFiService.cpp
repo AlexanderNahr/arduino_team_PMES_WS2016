@@ -232,7 +232,7 @@ void WiFiService::HWtoSWSerial()
 
 String WiFiService::Read()
 {
-	int tmp;
+	byte tmp;
 	tmp = StringCounter;
 
 	if (StringCounter > 1)
@@ -247,7 +247,7 @@ String WiFiService::Read()
 	return RxString[tmp - 1];
 }
 
-String WiFiService::GetString(int n)
+String WiFiService::GetString(byte n)
 {
 	return RxString[n-1];
 }
@@ -264,7 +264,7 @@ bool WiFiService::String_Is_Complete()
 
 bool WiFiService::IsStartChar(char c)
 {
-	for (int i = 0; i < 3; i++)
+	for (byte i = 0; i < 3; i++)
 	{
 		if (c == ptrStartChar[i])
 		{
@@ -277,7 +277,7 @@ bool WiFiService::IsStartChar(char c)
 
 bool WiFiService::IsEndChar(char c)
 {
-	for (int i = 0; i < 3; i++)
+	for (byte i = 0; i < 3; i++)
 	{
 		if (c == ptrEndChar[i] && StartStopCharType == i+1)
 		{
