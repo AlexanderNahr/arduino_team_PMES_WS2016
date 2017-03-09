@@ -3,23 +3,18 @@
 #include "WiFiService.h"
 #include <SoftwareSerial.h>
 
-//DEBUGGING
-#define DEBUG
-#ifdef DEBUG
-#define DEBUG_PRINT(x)  Serial.print(F("DEBUG: ")); Serial.println (x,HEX);
-#else
-#define DEBUG_PRINT(x)
-#endif
-
 //#define DEBUG_MODE
 #ifdef DEBUG_MODE
-#define DEBUG_MODE(x)  Serial.print(F("DEBUG_MODE: ")); Serial.println (x);
+#define DEBUG_MODE(x)  Serial.print("DEBUG_MODE: "); Serial.println (x);
 #else
 #define DEBUG_MODE(x)
 #endif
 
+String received_string;
+
 // Create SoftwareSerial object
-SoftwareSerial mySerial(10, 11); // RX, TX
+SoftwareSerial serialWiFi(10, 11); // RX, TX
+SoftwareSerial serialExtern(8, 9); // RX, TX
 
 //Constructor
 WiFiService::WiFiService()
@@ -46,23 +41,23 @@ WiFiService::WiFiService()
   CurrentString = "";
   StartStopCharType = 0;
   StringCounter = 3;
-  RxString[0].reserve(57);
-  RxString[1].reserve(1);
-  RxString[2].reserve(1);
-
 }
 
 
 void WiFiService::Init()
 {
-  mySerial.begin(9600);   // Set data rate for the SW serial port
-  while (!mySerial) {;}   // wait for SW serial port to connect.
+  serialWiFi.begin(9600);   // Set data rate for the SW serial port
+  while (!serialWiFi) { ; }   // wait for SW serial port to connect.
+
+  serialExtern.begin(9600);   // Set data rate for the SW serial port
+  while (!serialExtern) { ; }   // wait for SW serial port to connect.
 
 }
 
 
 void WiFiService::Run(bool bo)
 {
+	serialWiFi.listen();
 	//Set Approval to True
 	WiFiMode = bo;
 	if (WiFiMode) {Approval = WiFiMode;}
@@ -73,6 +68,12 @@ void WiFiService::Run(bool bo)
 	{
 		DEBUG_MODE("Idle")
 		Idle();
+	}
+
+	if (GoToPrepare)
+	{
+		DEBUG_MODE("Prepare_for_next_String")
+			Prepare_for_next_String();
 	}
 
 	//Mode "Wait_for_Start_Character"
@@ -88,12 +89,6 @@ void WiFiService::Run(bool bo)
 		DEBUG_MODE("Build String") 
 		BuildString();              
 	} 
-
-	if (GoToPrepare)
-	{
-		DEBUG_MODE("Prepare_for_next_String")
-		Prepare_for_next_String();
-	}
   
     //Mode "String Complete"
 	if (SawEndChar)  
@@ -101,17 +96,21 @@ void WiFiService::Run(bool bo)
 		DEBUG_MODE("String Complete")
 		StringComplete();
 	} 
-  if (mySerial.overflow()) 
-  {
-    Serial.println(F("SoftwareSerial overflow!")); 
-  }
+
   HWtoSWSerial();
 }
 
 void WiFiService::Send(String str)
 {
 
-		mySerial.print(str);
+		serialWiFi.print(str);
+}
+
+void WiFiService::SendtoExternal(String str)
+{
+	serialExtern.listen();
+	serialExtern.print(str);
+	serialWiFi.listen();
 }
 
 //Modes
@@ -126,9 +125,9 @@ void WiFiService::Idle()
 // When detected, StringInProgress = true and rxString = "["
 void WiFiService::Wait_for_Start_Character()
 {
-		while (mySerial.available() && !SawStartChar)
+		while (serialWiFi.available() && !SawStartChar)
 		{
-			SerialChar = mySerial.read();
+			SerialChar = serialWiFi.read();
 			if (IsStartChar(SerialChar))
 			{
 				CurrentString = SerialChar;
@@ -139,7 +138,7 @@ void WiFiService::Wait_for_Start_Character()
 			{
 				if (ptrSendtoSerialMonitor)
 				{
-					Serial.write(SerialChar); // Serial.write(mySerial.read());
+					Serial.write(SerialChar); // Serial.write(serialWiFi.read());
 				}
 			}		
 		}
@@ -151,9 +150,9 @@ void WiFiService::Wait_for_Start_Character()
 // until End Character is detected
 void WiFiService::BuildString()
 {
-          while (mySerial.available() && !SawEndChar)
+          while (serialWiFi.available() && !SawEndChar)
           {
-			  SerialChar = (char)mySerial.read();
+			  SerialChar = (char)serialWiFi.read();
 
 			  if (!SawEndChar)
 			  {
@@ -171,21 +170,12 @@ void WiFiService::StringComplete()
 {
 	int temp;
 	String strtemp;
-	
-		if (StringCounter < 3)
-		{
-			StringCounter++;
-		}
-		else
-		{
-			StringCounter = 1;
-		}
 
-		strtemp = RxString[StringCounter - 1].length();
+		strtemp = received_string.length();
 		temp = strtemp.toInt();
-		RxString[StringCounter - 1].remove(0, temp);
-		RxString[StringCounter - 1] += CurrentString;
-
+		received_string.remove(0, temp);
+		received_string += CurrentString;
+	
 		GoToPrepare = true;
 		
 }
@@ -213,35 +203,11 @@ void WiFiService::HWtoSWSerial()
 {
     while (Serial.available())   
 	{
-		mySerial.write(Serial.read());
+		serialWiFi.write(Serial.read());
 	} 
 
 }
 
-//Get Functions
-//********************************************************************************************************
-
-String WiFiService::Read()
-{
-	int tmp;
-	tmp = StringCounter;
-
-	if (StringCounter > 1)
-	{
-		StringCounter--;
-	}
-	else
-	{
-		StringCounter = 3;
-	}
-
-	return RxString[tmp - 1];
-}
-
-String WiFiService::GetString(int n)
-{
-	return RxString[n-1];
-}
 
 //Basic Check Functions
 //********************************************************************************************************
@@ -255,7 +221,7 @@ bool WiFiService::String_Is_Complete()
 
 bool WiFiService::IsStartChar(char c)
 {
-	for (int i = 0; i < 3; i++)
+	for (byte i = 0; i < 3; i++)
 	{
 		if (c == ptrStartChar[i])
 		{
@@ -268,7 +234,7 @@ bool WiFiService::IsStartChar(char c)
 
 bool WiFiService::IsEndChar(char c)
 {
-	for (int i = 0; i < 3; i++)
+	for (byte i = 0; i < 3; i++)
 	{
 		if (c == ptrEndChar[i] && StartStopCharType == i+1)
 		{
@@ -294,6 +260,42 @@ char WiFiService::Get_bool(bool Variable)
 
 void WiFiService::Debug_ShowAll()
 {
+  char tempchar;
+  
+  Serial.write("SawEndChar: ");
+  tempchar = Get_bool(SawEndChar);
+  Serial.write(tempchar);
+  Serial.println("");
+
+  Serial.write("SawStartChar: ");
+  tempchar = Get_bool(SawStartChar);
+  Serial.write(tempchar);
+  Serial.println("");
+
+  Serial.write("ptrSendtoSerialMonitor: ");
+  tempchar = Get_bool(ptrSendtoSerialMonitor);
+  Serial.write(tempchar);
+  Serial.println("");
+
+  Serial.write("ptrStartChar[1]: ");
+  Serial.write(ptrStartChar[1]);
+  Serial.println("");
+
+  Serial.write("ptrStartChar[2]: ");
+  Serial.write(ptrStartChar[2]);
+  Serial.println("");
+  
+  Serial.write("ptrEndChar[1]: ");
+  Serial.write(ptrEndChar[1]);
+  Serial.println("");
+
+  Serial.write("ptrEndChar[2]: ");
+  Serial.write(ptrEndChar[2]);
+  Serial.println("");
+
+  Serial.write("CurrentString: ");
+  Serial.print(CurrentString);
+  Serial.println("");
 
 }
 
