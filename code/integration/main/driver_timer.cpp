@@ -19,7 +19,6 @@ long StartTime_MillSek;                             //time point: starting the p
 int OrderProcessTime_Sek;                           //total time the factory needs to terminate all orders (will be increased at each new incoming order)
 int TimeForOneOrder;                        
 bool TimerDebug=true; 
-String g_MyOrders[5]={"%","%","%","%","%"};
 
 void timerDebug(bool Setting)
 {
