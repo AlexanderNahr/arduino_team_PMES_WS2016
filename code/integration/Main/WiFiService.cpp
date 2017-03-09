@@ -1,7 +1,7 @@
 //Includes
 #include <Arduino.h>
 #include "WiFiService.h"
-#include <SoftwareSerial.h>
+#include "SoftwareSerial_mod.h"
 
 //#define DEBUG_MODE
 #ifdef DEBUG_MODE
