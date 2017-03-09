@@ -10,7 +10,6 @@
 #define DEBUG_MODE(x)
 #endif
 
-//String received_string;
 
 // Create SoftwareSerial object
 SoftwareSerial serialWiFi(10, 11); // RX, TX
@@ -171,10 +170,10 @@ void WiFiService::StringComplete()
 	int temp;
 	String strtemp;
 
-		strtemp = received_string.length();
+		strtemp = g_received_string.length();
 		temp = strtemp.toInt();
-		received_string.remove(0, temp);
-		received_string += CurrentString;
+		g_received_string.remove(0, temp);
+		g_received_string += CurrentString;
 	
 		GoToPrepare = true;
 		

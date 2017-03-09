@@ -35,7 +35,8 @@ typedef enum states
 
 /******************************************************************************************************************/
 // globals
-extern String received_string;
+extern String g_received_string;                      //!< receive buffer uart
+//extern String g_MyOrders[5];                          //!< storage for incoming orders to be passed to factory
 
 /******************************************************************************************************************/
 // function declaration

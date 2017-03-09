@@ -13,6 +13,7 @@
 // include files
 #include "Arduino.h"
 #include "SimpleTimer.h"  //!< source @Iza?
+#include "common.h"
 
 /******************************************************************************************************************/
 // globals
@@ -28,6 +29,8 @@ extern int RemainingTime_Sek;                              //remaining seconds u
 extern long StartTime_MillSek;                             //time point: starting the process of the first registered order (the very first one and the first one after pausing)
 extern int OrderProcessTime_Sek;                           //total time the factory needs to terminate all orders (will be increased at each new incoming order)
 extern int TimeForOneOrder;                          //IN SECONDS! 
+
+
 /******************************************************************************************************************/
 // function declaration
 void timerRuntime();

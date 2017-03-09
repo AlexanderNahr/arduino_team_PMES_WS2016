@@ -32,7 +32,7 @@ class Parser
   states RunParser(byte& Orders, int& RemainingTime);
   String Parser::ToFactory();
   
-  String ReceivedString;
+  //String ReceivedString;
   
 
   private: 
