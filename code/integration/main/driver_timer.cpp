@@ -6,7 +6,6 @@
 ********************************************************************************************************************/
 #include "driver_timer.h"
 
-
 SimpleTimer timer; 
 int counter;                                        
 //boolean DoDisable_myActivityTimer = true;             //boolean variable - if it is true, the Mysimpletimer will be disabled for the actual running cycle       
@@ -88,20 +87,25 @@ bool setupTimer()
 ********************************************************************************************************************/
 void FactoryTerminatedOneOrder()                                   //factory executed one order
 {
-  //USE FUNCTION HERE TO FORWARD TO FACTORY
-  Serial.print("SENT TO FACTORY: ");Serial.println(g_MyOrders[0]);
-  //USE FUNCTION HERE TO FORWARD TO FACTORY
-  
-  //shift orders in the array one position to the left 
-  for (int i=0;i<=4;i++)
+  if (numberoforders>1)
   {
-    g_MyOrders[i]=g_MyOrders[i+1];
+    //USE FUNCTION HERE TO FORWARD TO FACTORY
+    Serial.print("SENT TO FACTORY: ");Serial.println(g_MyOrders[0]);
+    //USE FUNCTION HERE TO FORWARD TO FACTORY
+  
+    //shift orders in the array one position to the left 
+    for (int i=0;i<=4;i++)
+    {
+     g_MyOrders[i]=g_MyOrders[i+1];
+    }
+    g_MyOrders[4]= "%";
   }
-  g_MyOrders[4]= "%";
+  
   
   numberoforders = numberoforders -1;                           //decrement number of orders
   if (numberoforders ==0)
   {
+    g_ForwardImmediately = true;
     if (TimerDebug)
     {
       Serial.print(millis());

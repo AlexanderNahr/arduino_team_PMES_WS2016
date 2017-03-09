@@ -28,6 +28,7 @@ byte g_error_count = 0;                   //!< counts erroneous messages receive
 String g_received_string,received_string_Auftrag;
 bool LastClientSignedOut=true;
 String StringToFab;
+bool g_ForwardImmediately;
 
 /****************************************************************************************************************//*
    \brief     initialization
@@ -45,6 +46,7 @@ void setup()
 
   myWiFiService.Init();         // init Wifi class
   g_received_string.reserve( 150 );
+  g_ForwardImmediately = true;
 }
 
 /****************************************************************************************************************//*
@@ -89,18 +91,29 @@ void loop()
         LastClientSignedOut=myAuftragsverwaltung.NewClientDetected(LastClientSignedOut);
         break;
       case ORDER_SUCCESSFUL:
-        if (!LastClientSignedOut)
-        {
+        //if (!LastClientSignedOut)
+        //{
+          LastClientSignedOut=myAuftragsverwaltung.NewClientDetected(LastClientSignedOut);
           received_string_Auftrag = myAuftragsverwaltung.NewOrderRegistered(g_received_string, numberoforders, RemainingTime_Sek);
           if ((received_string_Auftrag.indexOf("EXT_ORDER")==-1) && (received_string_Auftrag.indexOf("ERROR")==-1))
           {
             StringToFab = myParser.ToFactory();
-            AddStringToArray(StringToFab);
+            if (g_ForwardImmediately)
+            {
+              g_ForwardImmediately=false;
+             //USE FUNCTION HERE TO FORWARD TO FACTORY
+             Serial.print("SENT TO FACTORY: ");Serial.println(StringToFab);
+             //USE FUNCTION HERE TO FORWARD TO FACTORY
+            }
+            else
+            {
+              AddStringToArray(StringToFab);
+            }
              
           }
           myWiFiService.Send( received_string_Auftrag );
           //myWiFiService.SendtoExternal(received_string);
-        }
+        //}
 
         Serial.print(F("Auftragsverwaltung responds with: "));
         Serial.print( received_string_Auftrag );
