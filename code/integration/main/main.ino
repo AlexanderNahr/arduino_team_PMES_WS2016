@@ -59,72 +59,73 @@ void loop()
 
   if ( myWiFiService.String_Is_Complete() )                             // package received
   {
-    Serial.println("");
-    Serial.println(F("String detected!"));
-      
-    //received_string = myWiFiService.Read();                    // get string from Wifly
-      
-    myParser.ReceivedString = received_string;
-    g_states = myParser.RunParser(numberoforders, RemainingTime_Sek);             // interpret string
-    received_string = myParser.Get_String_from_Parser();  // get string for factory
-
-    switch ( g_states )
+    if (myWiFiService.String_Is_Complete())
     {
-      case ERROR_STATE:                           // error states have same result
-        myWiFiService.Send( received_string );
-        break;
-      case LOGIN_PW_WRONG:                        // error counter ++
-        myWiFiService.Send( received_string );
-        break;
-      case LOGOUT_SUCCESSFUL:
-        LastClientSignedOut=true;
-        break;  
-      //WE DO NOT HAVE THIS CASE ANYMORE                      
-      case ORDER_WRONG:   
-        myWiFiService.Send( received_string );                        
-        break;
-      case ORDER_PW_WRONG:                       
-        //g_error_count++;
-        myWiFiService.Send( received_string );
-        break;
-      case LOGIN_SUCCESSFUL:                      // client detected
-        myWiFiService.Send( received_string );
-        LastClientSignedOut=myAuftragsverwaltung.NewClientDetected(LastClientSignedOut);
-        break;
-      case ORDER_SUCCESSFUL:
-        if (!LastClientSignedOut)
-        {
-          received_string_Auftrag = myAuftragsverwaltung.NewOrderRegistered(received_string, numberoforders, RemainingTime_Sek);
-          if ((received_string_Auftrag.indexOf("EXT_ORDER")==-1) && (received_string_Auftrag.indexOf("ERROR")==-1))
-          {
-            StringToFab = myParser.ToFactory();
-            AddStringToArray(StringToFab);
-             
-          }
-          myWiFiService.Send( received_string_Auftrag );
-        }
+      Serial.println("");
+      Serial.println(F("String detected!"));
+      
+      received_string = myWiFiService.Read();                    // get string from Wifly
+      
+      myParser.ReceivedString = received_string;
+      g_states = myParser.RunParser("", numberoforders, RemainingTime_Sek);             // interpret string
+      received_string = myParser.Get_String_from_Parser();  // get string for factory
 
-        Serial.print(F("Auftragsverwaltung responds with: "));
-        Serial.print( received_string_Auftrag );
-        break;
-      case BROADCAST:                             // dunno
-        myWiFiService.Send( received_string );
-        break;
-      case CLIENT_CONNECT:                        // do nothing, pw not set yet
-        break;
-      case CLIENT_DISCONNECT:                     // *CLOS* detected -> client left network
-        //g_error_count = 0;                        // reset error count (should be in Auftragsverwaltung)
-        break;
-      default:
-        break;              
+      switch ( g_states )
+      {
+        case ERROR_STATE:                           // error states have same result
+          myWiFiService.Send( received_string );
+          break;
+        case LOGIN_PW_WRONG:                        // error counter ++
+          myWiFiService.Send( received_string );
+          break;
+        case LOGOUT_SUCCESSFUL:
+          LastClientSignedOut=true;
+          break;  
+        //WE DO NOT HAVE THIS CASE ANYMORE                      
+        case ORDER_WRONG:   
+          myWiFiService.Send( received_string );                        
+          break;
+        case ORDER_PW_WRONG:                       
+          //g_error_count++;
+          myWiFiService.Send( received_string );
+          break;
+        case LOGIN_SUCCESSFUL:                      // client detected
+          myWiFiService.Send( received_string );
+          LastClientSignedOut=myAuftragsverwaltung.NewClientDetected(LastClientSignedOut);
+          break;
+        case ORDER_SUCCESSFUL:
+          if (!LastClientSignedOut)
+          {
+            received_string_Auftrag = myAuftragsverwaltung.NewOrderRegistered(received_string, numberoforders, RemainingTime_Sek);
+            if ((received_string_Auftrag.indexOf("EXT_ORDER")==-1) && (received_string_Auftrag.indexOf("ERROR")==-1))
+            {
+              StringToFab = myParser.ToFactory();
+              AddStringToArray(StringToFab);
+               
+            }
+            myWiFiService.Send( received_string_Auftrag );
+          }
+          
+          
+          Serial.print(F("Auftragsverwaltung responds with: "));
+          Serial.print( received_string_Auftrag );
+          break;
+        case BROADCAST:                             // dunno
+          myWiFiService.Send( received_string );
+          break;
+        case CLIENT_CONNECT:                        // do nothing, pw not set yet
+          break;
+        case CLIENT_DISCONNECT:                     // *CLOS* detected -> client left network
+          //g_error_count = 0;                        // reset error count (should be in Auftragsverwaltung)
+          break;
+        default:
+          break;              
+        }
+        
       }
 
       //myWiFiService.Send( received_string );                       // send answer back to client      
-      myWiFiService.Send(received_string);
-      Serial.println(F("myWifiservice.send"));
-      //myWiFiService.SendtoExternal(received_string);
-
-
+      
       //if( g_error_count > MAX_ERROR_COUNT_SESSION)                      // check whether error count exceeds limit
      // {
         // send message back before kicking client out?

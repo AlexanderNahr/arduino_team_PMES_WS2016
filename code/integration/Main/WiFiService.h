@@ -19,8 +19,8 @@ class WiFiService
   //Public Functions
   void Init();
   void Run(bool bo);
-  void Send(String& str);
-  void SendtoExternal(String& str);
+  void Send(String str);
+  void SendtoExternal(String str);
   bool String_Is_Complete();
 
   // Debugging Functions
