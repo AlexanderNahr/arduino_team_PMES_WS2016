@@ -234,7 +234,7 @@ bool Parser::CheckString(String& OrderString)
   if ((Geom.length()<1)or(Geom.length()>2)){result =result *0; }
   Serial.print(F("Check string first part OK? ") ); 
   Serial.println(result);
-  OrderString = OrderString.substring(pos+1);                     // ERROR OCCURS HERE ORDERSTRING IS EMPTY after usng substring
+  OrderString.remove(0, pos+1);
   Serial.print(F("Check string orderstring sub: ") ); 
   Serial.println(OrderString);
   Geom_Int=Geom.toInt();
@@ -244,7 +244,7 @@ bool Parser::CheckString(String& OrderString)
   //check second string: Version
   pos = OrderString.indexOf(";");
   Version = OrderString.substring(0,pos);
-  OrderString = OrderString.substring(pos+1);
+  OrderString.remove(0, pos+1);
   if (Version.length()!=1) {result =result *0;}                 // this is where it bails out -> result is 0 because OrderString is empty
   Serial.print(F("Check string version OK? ") ); 
   Serial.println(result);
@@ -255,7 +255,7 @@ bool Parser::CheckString(String& OrderString)
     pos = OrderString.indexOf(";");
     Arrangement = OrderString.substring(0,pos);
     if (Arrangement.length()!=5) {result = result * 0;}
-    OrderString = OrderString.substring(pos+1);
+    OrderString.remove(0, pos+1);
   }
 
   //the string is longer than expected
