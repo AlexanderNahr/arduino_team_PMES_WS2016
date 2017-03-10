@@ -12,7 +12,7 @@
 
 #include <Arduino.h>
 #include "Parser.h"
-#include "driver_timer.h"   
+#include "driver_timer.h"
 #include "common.h"
 //Constructor
 Parser::Parser()
@@ -32,21 +32,19 @@ Parser::Parser()
 
 String Parser::Loginmanagement(byte& Orders, int& Time)
 {
-  Serial.println(g_received_string); // alex_debug
   String StringToBeReturned;
   String CommonAnswer = "SIGN_IN_RS%" + String(Orders) + "%" + String(Time) + "%";
   int pos = g_received_string.indexOf("%");
-  String ReceivedPassword = g_received_string.substring(pos+1);//, g_received_string.length()-1);
- // Serial.println("Loginmanagement pw: " + ReceivedPassword); // alex_debug
-  
-  if (ReceivedPassword==Password)
+  String ReceivedPassword = g_received_string.substring(pos + 1); //, g_received_string.length()-1);
+
+  if (ReceivedPassword == Password)
   {
     StringToBeReturned = CommonAnswer + "SUCCESSFUL";
     Returnvalue = LOGIN_SUCCESSFUL;
   }
   else
   {
-    Serial.print(F("pwWrong"));  
+    Serial.print(F("pwWrong"));
     StringToBeReturned = CommonAnswer + "PW_WRONG";
     Returnvalue = LOGIN_PW_WRONG;
   }
@@ -61,18 +59,18 @@ String Parser::Loginmanagement(byte& Orders, int& Time)
 
 String Parser::Logoutmanagement(byte& Orders, int& Time)
 {
-  String StringToBeReturned= "SIGN_OUT";
+  String StringToBeReturned = "SIGN_OUT";
   //int pos = g_received_string.indexOf("%");
   //String ReceivedPassword = g_received_string.substring(pos+1);
   //if (ReceivedPassword==Password)
   //{
   //  Returnvalue = LOGOUT_SUCCESSFUL;
- // }
- // else
- // {
+  // }
+  // else
+  // {
   //  Returnvalue = LOGOUT_PW_WRONG;
- // }
- Returnvalue = LOGOUT_SUCCESSFUL;
+  // }
+  Returnvalue = LOGOUT_SUCCESSFUL;
   return StringToBeReturned;
 
 }
@@ -85,25 +83,23 @@ String Parser::Logoutmanagement(byte& Orders, int& Time)
 
 String Parser::Ordermanagement(byte& Orders, int& Time)
 {
-  Serial.print(F("str:"));
-  Serial.println(g_received_string); // alex_debug
   String StringToBeReturned;
   String CommonAnswer_Part1 = "ORDER_RS%";
   String CommonAnswer_Part2 =  String(Orders) + "%" + String(Time);
   int pos1 = g_received_string.indexOf("%");
-  String SecondPart = g_received_string.substring(pos1+1);
+  String SecondPart = g_received_string.substring(pos1 + 1);
   int pos2 = SecondPart.indexOf("%");
-  String ReceivedPassword = SecondPart.substring(0,pos2);
-  String ThirdPart = SecondPart.substring(pos2+1);
+  String ReceivedPassword = SecondPart.substring(0, pos2);
+  String ThirdPart = SecondPart.substring(pos2 + 1);
 
-  if (ReceivedPassword==Password)
+  if (ReceivedPassword == Password)
   {
-    StringToFactory=ThirdPart;
+    StringToFactory = ThirdPart;
     bool StringOK = CheckString(ThirdPart);
     if (StringOK)
     {
       StringToBeReturned = CommonAnswer_Part1 + "SUCCESSFUL%" + CommonAnswer_Part2;
-      Returnvalue=ORDER_SUCCESSFUL;
+      Returnvalue = ORDER_SUCCESSFUL;
     }
     else
     {
@@ -139,18 +135,13 @@ String Parser::Broadcastmanagement()
 
 states Parser::RunParser(byte& Orders, int& RemainingTime)
 {
-  
-  Serial.print(F("RunParser string: ")); // alex_debug
-  Serial.println(g_received_string); // alex_debug
-  
-  
-  if (g_received_string.charAt(0)=='*')
+  if (g_received_string.charAt(0) == '*')
   {
-    g_received_string = g_received_string.substring(1,g_received_string.length()-1); 
+    g_received_string = g_received_string.substring(1, g_received_string.length() - 1);
     if (g_received_string == "OPEN")
     {
       Answer = "OPEN";
-      Returnvalue = CLIENT_CONNECT; 
+      Returnvalue = CLIENT_CONNECT;
     }
     else if (g_received_string == "CLOS")
     {
@@ -159,42 +150,28 @@ states Parser::RunParser(byte& Orders, int& RemainingTime)
     }
     else
     {
-      Answer = "SIGN_IN_RS%" + String(Orders) + "%" + String(RemainingTime)+ "%ERROR";
+      Answer = "SIGN_IN_RS%" + String(Orders) + "%" + String(RemainingTime) + "%ERROR";
       Returnvalue = ERROR_STATE;
-      
+
     }
   }
-  else 
+  else
   {
-    Serial.print(F("Parser else: ")); // alex_debug
-    Serial.println(g_received_string); // alex_debug
-    Serial.print(F("substring output: "));
-    Serial.println(g_received_string.length()-1);
-    //g_received_string = g_received_string;
-    Serial.print(F("parser memory full? "));
-    Serial.println( g_received_string );
-    g_received_string = g_received_string.substring(1,g_received_string.length()-1); 
-    Serial.print(F("Parser after else: ")); // alex_debug
-    Serial.println(g_received_string); // alex_debug
+    g_received_string = g_received_string.substring(1, g_received_string.length() - 1);
     int DelimiterPosition = g_received_string.indexOf("%");
-    String FirstWord = g_received_string.substring(0,DelimiterPosition); 
-    Serial.print(F("Parser first word: ")); // alex_debug
-    Serial.println(FirstWord); // alex_debug
-    if(FirstWord=="SIGN_IN")
+    String FirstWord = g_received_string.substring(0, DelimiterPosition);
+
+    if (FirstWord == "SIGN_IN")
     {
-      Serial.println(F("Anmeldung"));
-      Serial.println(g_received_string); // alex_debug
-      Answer=Loginmanagement(numberoforders,RemainingTime_Sek);
+      Answer = Loginmanagement(numberoforders, RemainingTime_Sek);
     }
-    else if (FirstWord=="ORDER")
+    else if (FirstWord == "ORDER")
     {
-      Serial.print(F("Parser order detected: ")); // alex_debug
-      Serial.println(Answer); // alex_debug
-      Answer = Ordermanagement(numberoforders,RemainingTime_Sek);
+      Answer = Ordermanagement(numberoforders, RemainingTime_Sek);
     }
-    else if (FirstWord=="SIGN_OUT")
+    else if (FirstWord == "SIGN_OUT")
     {
-      Answer = Logoutmanagement(numberoforders,RemainingTime_Sek); 
+      Answer = Logoutmanagement(numberoforders, RemainingTime_Sek);
     }
     else if (FirstWord == "BROADCAST")
     {
@@ -203,12 +180,10 @@ states Parser::RunParser(byte& Orders, int& RemainingTime)
     else
     {
       Returnvalue = ERROR_STATE;
-      Answer = "SIGN_IN_RS%" + String(Orders) + "%" + String(RemainingTime)+ "%ERROR";
+      Answer = "SIGN_IN_RS%" + String(Orders) + "%" + String(RemainingTime) + "%ERROR";
     }
     Answer = "[" + Answer + "]\n";      // set termination character
   }
-  Serial.print(F("Parser answer: ")); // alex_debug
-  Serial.println(Answer); // alex_debug
   return Returnvalue;
 }
 /**************************************************************************************/
@@ -219,49 +194,48 @@ states Parser::RunParser(byte& Orders, int& RemainingTime)
 
 bool Parser::CheckString(String& OrderString)
 {
-  int pos,Geom_Int;
+  int pos, Geom_Int;
   int result = 1;
-  String Geom, Version,Arrangement;
+  String Geom, Version, Arrangement;
   bool Status;
 
-  Serial.print(F("Check string orderstring: ") ); 
-  Serial.println(OrderString);
   //check first string: Geometry
   pos = OrderString.indexOf(";");
-  Geom = OrderString.substring(0,pos);
-  Serial.print(F("Check string geom: " )); 
-  Serial.println(Geom);
-  if ((Geom.length()<1)or(Geom.length()>2)){result =result *0; }
-  Serial.print(F("Check string first part OK? ") ); 
-  Serial.println(result);
-  OrderString.remove(0, pos+1);
-  Serial.print(F("Check string orderstring sub: ") ); 
-  Serial.println(OrderString);
-  Geom_Int=Geom.toInt();
-  Serial.print(F("Check string geom int: ") ); 
-  Serial.println(Geom_Int);
-  
+  Geom = OrderString.substring(0, pos);
+  if ((Geom.length() < 1) or (Geom.length() > 2)) {
+    result = 0;
+  }
+  OrderString.remove(0, pos + 1);
+  Geom_Int = Geom.toInt();
+
   //check second string: Version
   pos = OrderString.indexOf(";");
-  Version = OrderString.substring(0,pos);
-  OrderString.remove(0, pos+1);
-  if (Version.length()!=1) {result =result *0;}                 // this is where it bails out -> result is 0 because OrderString is empty
-  Serial.print(F("Check string version OK? ") ); 
-  Serial.println(result);
+  Version = OrderString.substring(0, pos);
+  OrderString.remove(0, pos + 1);
+  if (Version.length() != 1) {
+    result = 0; // this is where it bails out -> result is 0 because OrderString is empty
+  }
+
   //check all six Arrangement strings
-  for (int i=1; i<(Geom_Int+1); i++)
+  for (int i = 1; i < (Geom_Int + 1); i++)
   {
-    if (pos==-1) {result=result*0;}
+    if (pos == -1) {
+      result = 0;
+    }
     pos = OrderString.indexOf(";");
-    Arrangement = OrderString.substring(0,pos);
-    if (Arrangement.length()!=5) {result = result * 0;}
-    OrderString.remove(0, pos+1);
+    Arrangement = OrderString.substring(0, pos);
+    if (Arrangement.length() != 5) {
+      result = 0;
+    }
+    OrderString.remove(0, pos + 1);
   }
 
   //the string is longer than expected
-  if (pos!=-1) {result = result * 0;}
-  
-  if (result ==1)
+  if (pos != -1) {
+    result = 0;
+  }
+
+  if (result == 1)
   {
     Status = true;
   }
