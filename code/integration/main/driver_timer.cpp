@@ -5,6 +5,10 @@
    \date    2.2.2017
 ********************************************************************************************************************/
 #include "driver_timer.h"
+#include "WiFiService.h"
+#include "common.h" 
+
+extern WiFiService myWiFiService;            //!< Create WiFiService object
 
 SimpleTimer timer;
 int counter;
@@ -92,7 +96,7 @@ void FactoryTerminatedOneOrder()                                   //factory exe
     //USE FUNCTION HERE TO FORWARD TO FACTORY
     Serial.print("SENT TO FACTORY: "); Serial.println(g_MyOrders[0]);
     //USE FUNCTION HERE TO FORWARD TO FACTORY
-
+    myWiFiService.SendtoExternal(g_MyOrders[0]);
     //shift orders in the array one position to the left
     for (int i = 0; i <= 4; i++)
     {
