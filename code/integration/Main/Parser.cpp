@@ -32,12 +32,10 @@ Parser::Parser()
 
 String Parser::Loginmanagement(byte& Orders, int& Time)
 {
-  Serial.println(g_received_string); // alex_debug
   String StringToBeReturned;
   String CommonAnswer = "SIGN_IN_RS%" + String(Orders) + "%" + String(Time) + "%";
   int pos = g_received_string.indexOf("%");
   String ReceivedPassword = g_received_string.substring(pos+1);//, g_received_string.length()-1);
- // Serial.println("Loginmanagement pw: " + ReceivedPassword); // alex_debug
   
   if (ReceivedPassword==Password)
   {
@@ -85,8 +83,6 @@ String Parser::Logoutmanagement(byte& Orders, int& Time)
 
 String Parser::Ordermanagement(byte& Orders, int& Time)
 {
-  Serial.print(F("str:"));
-  Serial.println(g_received_string); // alex_debug
   String StringToBeReturned;
   String CommonAnswer_Part1 = "ORDER_RS%";
   String CommonAnswer_Part2 =  String(Orders) + "%" + String(Time);
@@ -138,12 +134,7 @@ String Parser::Broadcastmanagement()
 //->updates the string to be sent to the App
 
 states Parser::RunParser(byte& Orders, int& RemainingTime)
-{
-  
-  Serial.print(F("RunParser string: ")); // alex_debug
-  Serial.println(g_received_string); // alex_debug
-  
-  
+{  
   if (g_received_string.charAt(0)=='*')
   {
     g_received_string = g_received_string.substring(1,g_received_string.length()-1); 
@@ -166,30 +157,16 @@ states Parser::RunParser(byte& Orders, int& RemainingTime)
   }
   else 
   {
-    Serial.print(F("Parser else: ")); // alex_debug
-    Serial.println(g_received_string); // alex_debug
-    Serial.print(F("substring output: "));
-    Serial.println(g_received_string.length()-1);
-    //g_received_string = g_received_string;
-    Serial.print(F("parser memory full? "));
-    Serial.println( g_received_string );
     g_received_string = g_received_string.substring(1,g_received_string.length()-1); 
-    Serial.print(F("Parser after else: ")); // alex_debug
-    Serial.println(g_received_string); // alex_debug
     int DelimiterPosition = g_received_string.indexOf("%");
     String FirstWord = g_received_string.substring(0,DelimiterPosition); 
-    Serial.print(F("Parser first word: ")); // alex_debug
-    Serial.println(FirstWord); // alex_debug
+
     if(FirstWord=="SIGN_IN")
     {
-      Serial.println(F("Anmeldung"));
-      Serial.println(g_received_string); // alex_debug
       Answer=Loginmanagement(numberoforders,RemainingTime_Sek);
     }
     else if (FirstWord=="ORDER")
     {
-      Serial.print(F("Parser order detected: ")); // alex_debug
-      Serial.println(Answer); // alex_debug
       Answer = Ordermanagement(numberoforders,RemainingTime_Sek);
     }
     else if (FirstWord=="SIGN_OUT")
@@ -207,8 +184,6 @@ states Parser::RunParser(byte& Orders, int& RemainingTime)
     }
     Answer = "[" + Answer + "]\n";      // set termination character
   }
-  Serial.print(F("Parser answer: ")); // alex_debug
-  Serial.println(Answer); // alex_debug
   return Returnvalue;
 }
 /**************************************************************************************/
@@ -224,42 +199,31 @@ bool Parser::CheckString(String& OrderString)
   String Geom, Version,Arrangement;
   bool Status;
 
-  Serial.print(F("Check string orderstring: ") ); 
-  Serial.println(OrderString);
   //check first string: Geometry
   pos = OrderString.indexOf(";");
   Geom = OrderString.substring(0,pos);
-  Serial.print(F("Check string geom: " )); 
-  Serial.println(Geom);
-  if ((Geom.length()<1)or(Geom.length()>2)){result =result *0; }
-  Serial.print(F("Check string first part OK? ") ); 
-  Serial.println(result);
+  if ((Geom.length()<1)or(Geom.length()>2)){result = 0; }
   OrderString.remove(0, pos+1);
-  Serial.print(F("Check string orderstring sub: ") ); 
-  Serial.println(OrderString);
   Geom_Int=Geom.toInt();
-  Serial.print(F("Check string geom int: ") ); 
-  Serial.println(Geom_Int);
   
   //check second string: Version
   pos = OrderString.indexOf(";");
   Version = OrderString.substring(0,pos);
   OrderString.remove(0, pos+1);
-  if (Version.length()!=1) {result =result *0;}                 // this is where it bails out -> result is 0 because OrderString is empty
-  Serial.print(F("Check string version OK? ") ); 
-  Serial.println(result);
+  if (Version.length()!=1) {result = 0;}                 // this is where it bails out -> result is 0 because OrderString is empty
+
   //check all six Arrangement strings
   for (int i=1; i<(Geom_Int+1); i++)
   {
-    if (pos==-1) {result=result*0;}
+    if (pos==-1) {result = 0;}
     pos = OrderString.indexOf(";");
     Arrangement = OrderString.substring(0,pos);
-    if (Arrangement.length()!=5) {result = result * 0;}
+    if (Arrangement.length()!=5) {result = 0;}
     OrderString.remove(0, pos+1);
   }
 
   //the string is longer than expected
-  if (pos!=-1) {result = result * 0;}
+  if (pos!=-1) {result = 0;}
   
   if (result ==1)
   {

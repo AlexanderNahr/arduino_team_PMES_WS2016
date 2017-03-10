@@ -63,17 +63,16 @@ void loop()
     Serial.println("");
     Serial.println(F("String detected!"));
       
-    //myParser.ReceivedString = g_received_string;
     g_states = myParser.RunParser(numberoforders, RemainingTime_Sek);             // interpret string
     g_received_string = myParser.Get_String_from_Parser();  // get string for factory
 
     switch ( g_states )
     {
       case ERROR_STATE:                           // error states have same result
-        myWiFiService.Send( g_received_string );
+        myWiFiService.Send( g_received_string );  // send answer back to client
         break;
       case LOGIN_PW_WRONG:                        // error counter ++
-        myWiFiService.Send( g_received_string );
+        myWiFiService.Send( g_received_string );  
         break;
       case LOGOUT_SUCCESSFUL:
         LastClientSignedOut=true;
@@ -118,19 +117,17 @@ void loop()
         Serial.print(F("Auftragsverwaltung responds with: "));
         Serial.print( received_string_Auftrag );
         break;
-      case BROADCAST:                             // dunno
+      case BROADCAST:                             
         myWiFiService.Send( g_received_string );
         break;
       case CLIENT_CONNECT:                        // do nothing, pw not set yet
         break;
       case CLIENT_DISCONNECT:                     // *CLOS* detected -> client left network
-        //g_error_count = 0;                        // reset error count (should be in Auftragsverwaltung)
+        //g_error_count = 0;                      // reset error count (should be in Auftragsverwaltung)
         break;
       default:
         break;              
-      }
-
-      // myWiFiService.Send( received_string );                       // send answer back to client      
+      }      
       
       Serial.println(F("myWifiservice.send"));   
 
