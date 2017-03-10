@@ -1,5 +1,6 @@
 #ifndef WiFiService_h
 #define WiFiService_h
+#include "common.h"
 #include <Arduino.h>
 
 #define STARTZEICHEN_1 '['
@@ -7,6 +8,7 @@
 #define ENDZEICHEN_1 ']'
 #define ENDZEICHEN_2 '*'
 #define SENDTOSWSERIAL true
+
 
 class WiFiService
 {
@@ -20,8 +22,6 @@ class WiFiService
   void Send(String str);
   void SendtoExternal(String str);
   bool String_Is_Complete();
-  String GetString(int n);
-  String Read();
 
   // Debugging Functions
   void Debug_ShowAll();
@@ -54,7 +54,7 @@ class WiFiService
 	char ptrStartChar[3];
 	char ptrEndChar[3];
   
-	//Memthods
+	//Methods
 	//****************************************************
 
 	//Modes
@@ -64,19 +64,13 @@ class WiFiService
 	void Prepare_for_next_String();
 	void Idle();
 
-
-  void Bidirectional_Mode();
-  void HWtoSWSerial();
-  bool Scan_SW_Serial_Buffer_for_Start_String ();
-  char Get_bool(bool Variable);
-  bool Received_String_follows_protocol();
+	//Internal
+	void HWtoSWSerial();
+	char Get_bool(bool Variable);
   
-  void rxString_set(String Text);
-  void rxString_reserve(int Space);
-  
-  //Checks
-  bool IsStartChar(char c);
-  bool IsEndChar(char c);
+	//Checks
+	bool IsStartChar(char c);
+	bool IsEndChar(char c);
   
 };
 
