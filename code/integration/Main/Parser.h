@@ -16,38 +16,38 @@
 
 
 /****************************************************************************************************************//**
- * \brief   Parser Class
- * \author  Izabella Sandor
- * \date    Feb 23, 2017
+   \brief   Parser Class
+   \author  Izabella Sandor
+   \date    Feb 23, 2017
 *******************************************************************************************************************/
 class Parser
 {
   public:
-  
-  //Constructor:
-  Parser();
 
-  //Public Functions and Variables that can be accessed from the Main Loop
-  String Get_String_from_Parser();
-  states RunParser(byte& Orders, int& RemainingTime);
-  String Parser::ToFactory();
-  
-  //String ReceivedString;
-  
+    //Constructor:
+    Parser();
 
-  private: 
-  //Private Variables that can NOT be accessed from the Main Loop.They can only be accessed by the class itself.
-  String Answer;
-  String Password;
-  states Returnvalue; 
-  String StringToFactory;
-  
-  //Private Functions that can NOT be accessed from the Main Loop. They can only be accessed by the class itself.
-  String Loginmanagement(byte& Orders, int& Time);
-  String Logoutmanagement(byte& Orders, int& Time);
-  String Ordermanagement(byte& Orders, int& Time);
-  String Broadcastmanagement();
-  bool CheckString(String& OrderString);
+    //Public Functions and Variables that can be accessed from the Main Loop
+    String Get_String_from_Parser();
+    states RunParser(byte& Orders, int& RemainingTime);
+    String Parser::ToFactory();
+
+    //String ReceivedString;
+
+
+  private:
+    //Private Variables that can NOT be accessed from the Main Loop.They can only be accessed by the class itself.
+    String Answer;
+    String Password;
+    states Returnvalue;
+    String StringToFactory;
+
+    //Private Functions that can NOT be accessed from the Main Loop. They can only be accessed by the class itself.
+    String Loginmanagement(byte& Orders, int& Time);
+    String Logoutmanagement(byte& Orders, int& Time);
+    String Ordermanagement(byte& Orders, int& Time);
+    String Broadcastmanagement();
+    bool CheckString(String& OrderString);
 };
 
 #endif

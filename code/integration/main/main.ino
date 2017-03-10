@@ -25,18 +25,20 @@ STATES g_states;                          //!< states for state machine
 byte g_error_count = 0;                   //!< counts erroneous messages received, resets when client disconnects
 #define MAX_ERROR_COUNT_SESSION 5         //!< max number of allowed erroneous message per sessions 
 
-String g_received_string,received_string_Auftrag;
-bool LastClientSignedOut=true;
+String g_received_string, received_string_Auftrag;
+bool LastClientSignedOut = true;
 String StringToFab;
 bool g_ForwardImmediately;
 
 /****************************************************************************************************************//*
    \brief     initialization
-/******************************************************************************************************************/
+  /******************************************************************************************************************/
 void setup()
 {
   Serial.begin(9600);           // set data rate for the HW serial port
-  while (!Serial){;}            // init HW serial port wait for HW serial port to connect.
+  while (!Serial) {
+    ; // init HW serial port wait for HW serial port to connect.
+  }
 
   if ( setupTimer() == true )   // init timer module
   {
@@ -51,7 +53,7 @@ void setup()
 
 /****************************************************************************************************************//*
    \brief     main loop
-/******************************************************************************************************************/
+  /******************************************************************************************************************/
 void loop()
 {
   timerRuntime();                                                       // example output timer
@@ -62,7 +64,7 @@ void loop()
   {
     Serial.println("");
     Serial.println(F("String detected!"));
-      
+
     g_states = myParser.RunParser(numberoforders, RemainingTime_Sek);             // interpret string
     g_received_string = myParser.Get_String_from_Parser();  // get string for factory
 
@@ -72,52 +74,52 @@ void loop()
         myWiFiService.Send( g_received_string );  // send answer back to client
         break;
       case LOGIN_PW_WRONG:                        // error counter ++
-        myWiFiService.Send( g_received_string );  
+        myWiFiService.Send( g_received_string );
         break;
       case LOGOUT_SUCCESSFUL:
-        LastClientSignedOut=true;
-        break;  
-      //WE DO NOT HAVE THIS CASE ANYMORE                      
-      case ORDER_WRONG:   
-        myWiFiService.Send( g_received_string );                        
+        LastClientSignedOut = true;
         break;
-      case ORDER_PW_WRONG:                       
+      //WE DO NOT HAVE THIS CASE ANYMORE
+      case ORDER_WRONG:
+        myWiFiService.Send( g_received_string );
+        break;
+      case ORDER_PW_WRONG:
         //g_error_count++;
         myWiFiService.Send( g_received_string );
         break;
       case LOGIN_SUCCESSFUL:                      // client detected
         myWiFiService.Send( g_received_string );
-        LastClientSignedOut=myAuftragsverwaltung.NewClientDetected(LastClientSignedOut);
+        LastClientSignedOut = myAuftragsverwaltung.NewClientDetected(LastClientSignedOut);
         break;
       case ORDER_SUCCESSFUL:
         //if (!LastClientSignedOut)
         //{
-          LastClientSignedOut=myAuftragsverwaltung.NewClientDetected(LastClientSignedOut);
-          received_string_Auftrag = myAuftragsverwaltung.NewOrderRegistered(g_received_string, numberoforders, RemainingTime_Sek);
-          if ((received_string_Auftrag.indexOf("EXT_ORDER")==-1) && (received_string_Auftrag.indexOf("ERROR")==-1))
+        LastClientSignedOut = myAuftragsverwaltung.NewClientDetected(LastClientSignedOut);
+        received_string_Auftrag = myAuftragsverwaltung.NewOrderRegistered(g_received_string, numberoforders, RemainingTime_Sek);
+        if ((received_string_Auftrag.indexOf("EXT_ORDER") == -1) && (received_string_Auftrag.indexOf("ERROR") == -1))
+        {
+          StringToFab = myParser.ToFactory();
+          if (g_ForwardImmediately)
           {
-            StringToFab = myParser.ToFactory();
-            if (g_ForwardImmediately)
-            {
-              g_ForwardImmediately=false;
-             //USE FUNCTION HERE TO FORWARD TO FACTORY
-             Serial.print("SENT TO FACTORY: ");Serial.println(StringToFab);
-             //USE FUNCTION HERE TO FORWARD TO FACTORY
-            }
-            else
-            {
-              AddStringToArray(StringToFab);
-            }
-             
+            g_ForwardImmediately = false;
+            //USE FUNCTION HERE TO FORWARD TO FACTORY
+            Serial.print("SENT TO FACTORY: "); Serial.println(StringToFab);
+            //USE FUNCTION HERE TO FORWARD TO FACTORY
           }
-          myWiFiService.Send( received_string_Auftrag );
-          //myWiFiService.SendtoExternal(received_string);
+          else
+          {
+            AddStringToArray(StringToFab);
+          }
+
+        }
+        myWiFiService.Send( received_string_Auftrag );
+        //myWiFiService.SendtoExternal(received_string);
         //}
 
         Serial.print(F("Auftragsverwaltung responds with: "));
         Serial.print( received_string_Auftrag );
         break;
-      case BROADCAST:                             
+      case BROADCAST:
         myWiFiService.Send( g_received_string );
         break;
       case CLIENT_CONNECT:                        // do nothing, pw not set yet
@@ -126,17 +128,17 @@ void loop()
         //g_error_count = 0;                      // reset error count (should be in Auftragsverwaltung)
         break;
       default:
-        break;              
-      }      
-      
-      Serial.println(F("myWifiservice.send"));   
-
-      //if( g_error_count > MAX_ERROR_COUNT_SESSION)                      // check whether error count exceeds limit
-     // {
-        // send message back before kicking client out?
-        // kick out function    
-     // }
+        break;
     }
+
+    Serial.println(F("myWifiservice.send"));
+
+    //if( g_error_count > MAX_ERROR_COUNT_SESSION)                      // check whether error count exceeds limit
+    // {
+    // send message back before kicking client out?
+    // kick out function
+    // }
+  }
 }
 
 
