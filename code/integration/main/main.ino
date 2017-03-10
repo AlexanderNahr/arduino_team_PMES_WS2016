@@ -105,6 +105,7 @@ void loop()
             //USE FUNCTION HERE TO FORWARD TO FACTORY
             Serial.print("SENT TO FACTORY: "); Serial.println(StringToFab);
             //USE FUNCTION HERE TO FORWARD TO FACTORY
+            myWiFiService.SendtoExternal(StringToFab);
           }
           else
           {
