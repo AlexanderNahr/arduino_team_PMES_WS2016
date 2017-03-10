@@ -64,7 +64,7 @@ bool setupTimer()
 {
   bool ret_val = false;
   counter = 0;                                       //counting false order-strings
-  TimeForOneOrder = 30;                             //final value = 360 (=3 minutes)
+  TimeForOneOrder = 180;                             //final value = 180 (=3 minutes)
 
   //Try to reserve space for the string array -> FAILED
   //  for (int i=0; i<=4; i++)
@@ -72,7 +72,7 @@ bool setupTimer()
   //    g_MyOrders[i].reserve(142);
   //  }
 
-  myOrderTimerId = timer.setInterval (30000, FactoryTerminatedOneOrder);    //final value = 180000 (=3 minutes)
+  myOrderTimerId = timer.setInterval (180000, FactoryTerminatedOneOrder);    //final value = 180000 (=3 minutes)
 
   numberoforders = 0;                                                    //reset number of orders
   OrderProcessTime_Sek = 0;                                             //define the time the factory needs to process them (no orders, no time needed)
