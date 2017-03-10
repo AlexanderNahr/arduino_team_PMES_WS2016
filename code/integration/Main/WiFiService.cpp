@@ -1,7 +1,7 @@
 //Includes
 #include <Arduino.h>
 #include "WiFiService.h"
-#include <SoftwareSerial.h>
+#include "SoftwareSerial_mod.h"
 
 //#define DEBUG_MODE
 #ifdef DEBUG_MODE
@@ -10,7 +10,6 @@
 #define DEBUG_MODE(x)
 #endif
 
-String received_string;
 
 // Create SoftwareSerial object
 SoftwareSerial serialWiFi(10, 11); // RX, TX
@@ -19,7 +18,7 @@ SoftwareSerial serialExtern(8, 9); // RX, TX
 //Constructor
 WiFiService::WiFiService()
 {
-  //Parameters:
+  //Parameters:/
 	ptrSendtoSerialMonitor = SENDTOSWSERIAL;
 	ptrStartChar[0] = STARTZEICHEN_1;
 	ptrStartChar[1] = STARTZEICHEN_1;
@@ -100,13 +99,13 @@ void WiFiService::Run(bool bo)
   HWtoSWSerial();
 }
 
-void WiFiService::Send(String str)
+void WiFiService::Send(String& str)
 {
 
 		serialWiFi.print(str);
 }
 
-void WiFiService::SendtoExternal(String str)
+void WiFiService::SendtoExternal(String& str)
 {
 	serialExtern.listen();
 	serialExtern.print(str);
@@ -171,10 +170,10 @@ void WiFiService::StringComplete()
 	int temp;
 	String strtemp;
 
-		strtemp = received_string.length();
+		strtemp = g_received_string.length();
 		temp = strtemp.toInt();
-		received_string.remove(0, temp);
-		received_string += CurrentString;
+		g_received_string.remove(0, temp);
+		g_received_string += CurrentString;
 	
 		GoToPrepare = true;
 		

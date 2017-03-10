@@ -6,7 +6,6 @@
 ********************************************************************************************************************/
 #include "driver_timer.h"
 
-
 SimpleTimer timer; 
 int counter;                                        
 //boolean DoDisable_myActivityTimer = true;             //boolean variable - if it is true, the Mysimpletimer will be disabled for the actual running cycle       
@@ -19,7 +18,6 @@ long StartTime_MillSek;                             //time point: starting the p
 int OrderProcessTime_Sek;                           //total time the factory needs to terminate all orders (will be increased at each new incoming order)
 int TimeForOneOrder;                        
 bool TimerDebug=true; 
-String MyOrders[5]={"%","%","%","%","%"};
 
 void timerDebug(bool Setting)
 {
@@ -71,7 +69,7 @@ bool setupTimer()
   //Try to reserve space for the string array -> FAILED 
 //  for (int i=0; i<=4; i++)
 //  {
-//    MyOrders[i].reserve(142);
+//    g_MyOrders[i].reserve(142);
 //  }
   
   myOrderTimerId = timer.setInterval (30000,FactoryTerminatedOneOrder);     //final value = 180000 (=3 minutes)
@@ -89,20 +87,25 @@ bool setupTimer()
 ********************************************************************************************************************/
 void FactoryTerminatedOneOrder()                                   //factory executed one order
 {
-  //USE FUNCTION HERE TO FORWARD TO FACTORY
-  Serial.print("SENT TO FACTORY: ");Serial.println(MyOrders[0]);
-  //USE FUNCTION HERE TO FORWARD TO FACTORY
-  
-  //shift orders in the array one position to the left 
-  for (int i=0;i<=4;i++)
+  if (numberoforders>1)
   {
-    MyOrders[i]=MyOrders[i+1];
+    //USE FUNCTION HERE TO FORWARD TO FACTORY
+    Serial.print("SENT TO FACTORY: ");Serial.println(g_MyOrders[0]);
+    //USE FUNCTION HERE TO FORWARD TO FACTORY
+  
+    //shift orders in the array one position to the left 
+    for (int i=0;i<=4;i++)
+    {
+     g_MyOrders[i]=g_MyOrders[i+1];
+    }
+    g_MyOrders[4]= "%";
   }
-  MyOrders[4]= "%";
+  
   
   numberoforders = numberoforders -1;                           //decrement number of orders
   if (numberoforders ==0)
   {
+    g_ForwardImmediately = true;
     if (TimerDebug)
     {
       Serial.print(millis());
@@ -130,19 +133,19 @@ void AddStringToArray(String& NewString)
   int LastEmptyPos;
   for (int i=4; i>=0; i--)
   {
-    if (MyOrders[i]=="%")
+    if (g_MyOrders[i]=="%")
     {
       LastEmptyPos = i;
       //Serial.print(String(i));
     }
   }
   Serial.println();
-  MyOrders[LastEmptyPos]=NewString;
+  g_MyOrders[LastEmptyPos]=NewString;
   //use next for debugging:
   
 //  for (int j=0;j<=4;j++)
 //  {
-//    Serial.print(MyOrders[j]);
+//    Serial.print(g_MyOrders[j]);
 //    Serial.print("***");
 //  }
 //  Serial.println();
